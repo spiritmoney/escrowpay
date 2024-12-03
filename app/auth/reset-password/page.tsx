@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/app/hooks/useAuth";
 import { toast } from "react-toastify";
+import { BackToHomeButton } from "../../components/BackToHomeButton";
 
 const resetPasswordSchema = z
   .object({
@@ -70,22 +71,19 @@ const ResetPasswordPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div
-        className="sm:mx-auto sm:w-full sm:max-w-md"
-      >
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <BackToHomeButton />
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900">
           Reset your password
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-center text-sm text-gray-600 px-2">
           Enter the OTP sent to your email and choose a new password.
         </p>
       </div>
 
-      <div
-        className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
-      >
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="mt-8 sm:mx-auto w-full sm:max-w-md">
+        <div className="bg-white py-6 px-4 sm:py-8 sm:px-10 shadow rounded-lg">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField

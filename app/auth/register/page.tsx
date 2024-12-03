@@ -22,9 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import countries from "@/countries.json"; // Adjust the path as necessary
+import countries from "@/countries.json";
 import { useAuth } from "../../hooks/useAuth";
 import { toast } from "react-toastify";
+import { BackToHomeButton } from "../../components/BackToHomeButton";
 
 const signUpSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -80,19 +81,16 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div
-        className="sm:mx-auto sm:w-full sm:max-w-md"
-      >
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <BackToHomeButton />
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900">
           Create your account
         </h2>
       </div>
 
-      <div
-        className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
-      >
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="mt-8 sm:mx-auto w-full sm:max-w-md">
+        <div className="bg-white py-6 px-4 sm:py-8 sm:px-10 shadow rounded-lg">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
@@ -127,7 +125,7 @@ const SignUpPage: React.FC = () => {
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="firstName"
@@ -172,7 +170,7 @@ const SignUpPage: React.FC = () => {
                           <SelectValue placeholder="Select a country" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="max-h-[200px]">
                         {countries.map((country) => (
                           <SelectItem key={country.code} value={country.code}>
                             {country.name}

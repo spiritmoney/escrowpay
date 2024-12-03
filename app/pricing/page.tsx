@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const tiers = [
   {
@@ -97,11 +98,13 @@ const PricingPage: React.FC = () => {
                       ))}
                     </ul>
                   </div>
-                  <Button className="mt-8 block w-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200">
-                    {tier.name === "Enterprise"
-                      ? "Contact sales"
-                      : "Get started"}
-                  </Button>
+                  <Link href="/auth/register">
+                    <Button className="mt-8 block w-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200">
+                      {tier.name === "Enterprise"
+                        ? "Contact sales"
+                        : "Get started"}
+                    </Button>
+                  </Link>
                 </div>
               ))}
             </div>
