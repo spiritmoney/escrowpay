@@ -1,0 +1,378 @@
+[
+    {
+        "name": "Nigeria",
+        "code": "NG",
+        "capital": "Abuja",
+        "region": "AF",
+        "currency": {
+            "code": "NGN",
+            "name": "Nigerian naira",
+            "symbol": "₦"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/nga.svg",
+        "dialCode": "+234"
+    },
+    {
+        "name": "Ghana",
+        "code": "GH",
+        "capital": "Accra",
+        "region": "AF",
+        "currency": {
+            "code": "GHS",
+            "name": "Ghanaian cedi",
+            "symbol": "₵"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/gha.svg",
+        "dialCode": "+233"
+    },
+    {
+        "name": "Kenya",
+        "code": "KE",
+        "capital": "Nairobi",
+        "region": "AF",
+        "currency": {
+            "code": "KES",
+            "name": "Kenyan shilling",
+            "symbol": "Sh"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/ken.svg",
+        "dialCode": "+254"
+    },
+    {
+        "name": "South Africa",
+        "code": "ZA",
+        "capital": "Pretoria",
+        "region": "AF",
+        "currency": {
+            "code": "ZAR",
+            "name": "South African rand",
+            "symbol": "R"
+        },
+        "language": {
+            "code": "en",
+            "name": "English",
+            "nativeName": "English"
+        },
+        "flag": "https://restcountries.eu/data/zaf.svg",
+        "dialCode": "+27"
+    },
+    {
+        "name": "Botswana",
+        "code": "BW",
+        "capital": "Gaborone",
+        "region": "AF",
+        "currency": {
+            "code": "BWP",
+            "name": "Botswana pula",
+            "symbol": "P"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/bwa.svg",
+        "dialCode": "+267"
+    },
+    {
+        "name": "Gambia",
+        "code": "GM",
+        "capital": "Banjul",
+        "region": "AF",
+        "currency": {
+            "code": "GMD",
+            "name": "Gambian dalasi",
+            "symbol": "D"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/gmb.svg",
+        "dialCode": "+220"
+    },
+    {
+        "name": "Liberia",
+        "code": "LR",
+        "capital": "Monrovia",
+        "region": "AF",
+        "currency": {
+            "code": "LRD",
+            "name": "Liberian dollar",
+            "symbol": "$"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/lbr.svg",
+        "dialCode": "+231"
+    },
+    {
+        "name": "United States of America",
+        "code": "US",
+        "capital": "Washington, D.C.",
+        "region": "NA",
+        "currency": {
+            "code": "USD",
+            "name": "United States dollar",
+            "symbol": "$"
+        },
+        "language": {
+            "code": "en",
+            "name": "English",
+            "nativeName": "English"
+        },
+        "flag": "https://restcountries.eu/data/usa.svg",
+        "dialCode": "+1"
+    },
+    {
+        "name": "United Kingdom of Great Britain and Northern Ireland",
+        "code": "GB",
+        "capital": "London",
+        "region": "EU",
+        "currency": {
+            "code": "GBP",
+            "name": "British pound",
+            "symbol": "£"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/gbr.svg",
+        "dialCode": "+44"
+    },
+    {
+        "name": "United Arab Emirates",
+        "code": "AE",
+        "capital": "Abu Dhabi",
+        "region": "AS",
+        "currency": {
+            "code": "AED",
+            "name": "United Arab Emirates dirham",
+            "symbol": "د.إ"
+        },
+        "language": {
+            "code": "ar",
+            "name": "Arabic"
+        },
+        "flag": "https://restcountries.eu/data/are.svg",
+        "dialCode": "+971"
+    },
+    {
+        "name": "Turkey",
+        "code": "TR",
+        "capital": "Ankara",
+        "region": "AS",
+        "currency": {
+            "code": "TRY",
+            "name": "Turkish lira",
+            "symbol": "₺"
+        },
+        "language": {
+            "code": "tr",
+            "name": "Turkish"
+        },
+        "flag": "https://restcountries.eu/data/tur.svg",
+        "dialCode": "+90"
+    },
+    {
+        "name": "Cyprus",
+        "code": "CY",
+        "capital": "Nicosia",
+        "region": "EU",
+        "currency": {
+            "code": "EUR",
+            "name": "Euro",
+            "symbol": "€"
+        },
+        "language": {
+            "code": "tr",
+            "name": "Turkish"
+        },
+        "flag": "https://restcountries.eu/data/cyp.svg",
+        "dialCode": "+357"
+    },
+    {
+        "name": "Malaysia",
+        "code": "MY",
+        "capital": "Kuala Lumpur",
+        "region": "AS",
+        "currency": {
+            "code": "MYR",
+            "name": "Malaysian ringgit",
+            "symbol": "RM"
+        },
+        "language": {
+            "code": "RM",
+            "name": "Malaysian"
+        },
+        "flag": "https://restcountries.eu/data/mys.svg",
+        "dialCode": "+60"
+    },
+    {
+        "name": "Taiwan",
+        "code": "TW",
+        "capital": "Taipei",
+        "region": "AS",
+        "currency": {
+            "code": "TWD",
+            "name": "New Taiwan dollar",
+            "symbol": "$"
+        },
+        "language": {
+            "code": "zh",
+            "name": "Chinese"
+        },
+        "flag": "https://restcountries.eu/data/twn.svg",
+        "dialCode": "+886"
+    },
+    {
+        "name": "India",
+        "code": "IN",
+        "capital": "New Delhi",
+        "region": "AS",
+        "currency": {
+            "code": "INR",
+            "name": "Indian rupee",
+            "symbol": "₹"
+        },
+        "language": {
+            "code": "hi",
+            "name": "Hindi"
+        },
+        "flag": "https://restcountries.eu/data/ind.svg",
+        "dialCode": "+91"
+    },
+    {
+        "name": "Israel",
+        "code": "IL",
+        "capital": "Jerusalem",
+        "region": "AS",
+        "currency": {
+            "code": "ILS",
+            "name": "Israeli new shekel",
+            "symbol": "₪"
+        },
+        "language": {
+            "code": "he",
+            "name": "Hebrew (modern)"
+        },
+        "flag": "https://restcountries.eu/data/isr.svg",
+        "dialCode": "+972"
+    },
+    {
+        "name": "Lesotho",
+        "code": "LS",
+        "capital": "Maseru",
+        "region": "AF",
+        "currency": {
+            "code": "LSL",
+            "name": "Lesotho loti",
+            "symbol": "L"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/lso.svg",
+        "dialCode": "+266"
+    },
+    {
+        "name": "Madagascar",
+        "code": "MG",
+        "capital": "Antananarivo",
+        "region": "AF",
+        "currency": {
+            "code": "MGA",
+            "name": "Malagasy ariary",
+            "symbol": "Ar"
+        },
+        "language": {
+            "code": "fr",
+            "name": "French"
+        },
+        "flag": "https://restcountries.eu/data/mdg.svg",
+        "dialCode": "+261"
+    },
+    {
+        "name": "Australia",
+        "code": "AU",
+        "capital": "Canberra",
+        "region": "OC",
+        "currency": {
+            "code": "AUD",
+            "name": "Australian dollar",
+            "symbol": "$"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/aus.svg",
+        "dialCode": "+61"
+    },
+    {
+        "name": "New Zealand",
+        "code": "NZ",
+        "capital": "Wellington",
+        "region": "OC",
+        "currency": {
+            "code": "NZD",
+            "name": "New Zealand dollar",
+            "symbol": "$"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/nzl.svg",
+        "dialCode": "+64"
+    },
+    {
+        "name": "Japan",
+        "code": "JP",
+        "capital": "Tokyo",
+        "region": "AS",
+        "currency": {
+            "code": "JPY",
+            "name": "Japanese yen",
+            "symbol": "¥"
+        },
+        "language": {
+            "code": "ja",
+            "name": "Japanese"
+        },
+        "flag": "https://restcountries.eu/data/jpn.svg",
+        "dialCode": "+81"
+    },
+    {
+        "name": "Uganda",
+        "code": "UG",
+        "capital": "Kampala",
+        "region": "AF",
+        "currency": {
+            "code": "UGX",
+            "name": "Ugandan shilling",
+            "symbol": "Sh"
+        },
+        "language": {
+            "code": "en",
+            "name": "English"
+        },
+        "flag": "https://restcountries.eu/data/uga.svg",
+        "dialCode": "+256"
+    }
+]

@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const Hero: React.FC = () => {
   return (
@@ -15,19 +16,23 @@ const Hero: React.FC = () => {
           Espees using a blockchain escrow system.
         </div>
         <div className="mt-10 flex justify-center space-x-4">
-          <Button
-            size="lg"
-            className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
-          >
-            Get Started
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="text-blue-500 border-blue-500 hover:bg-blue-500 hover:text-white transition-colors duration-200"
-          >
-            View API Docs
-          </Button>
+          <Link href="/auth/register">
+            <Button
+              size="lg"
+              className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
+            >
+              Get Started
+            </Button>
+          </Link>
+          <Link href="/api-docs">
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-blue-500 border-blue-500 hover:bg-blue-500 hover:text-white transition-colors duration-200"
+            >
+              View API Docs
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

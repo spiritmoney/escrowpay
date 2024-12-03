@@ -23,7 +23,7 @@ const CTA: React.FC = () => {
               placeholder="Enter your email"
               className="bg-white w-full sm:max-w-xs rounded-md px-5 py-3 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 border-transparent"
             />
-            <div className="sm:mt-0 sm:ml-3">
+            <div className="sm:mt-0 sm:ml-3 mt-3">
               <Button className="w-full bg-black text-white hover:bg-gray-900 transition-colors duration-200">
                 Get Started
               </Button>

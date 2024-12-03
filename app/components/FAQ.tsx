@@ -51,7 +51,10 @@ const FAQ: React.FC = () => {
 
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
-            <AccordionItem value={`item-${index}`}>
+            <AccordionItem 
+              key={`faq-${index}`} 
+              value={`item-${index}`}
+            >
               <AccordionTrigger className="text-white hover:text-blue-500 transition-colors duration-200">
                 {faq.question}
               </AccordionTrigger>

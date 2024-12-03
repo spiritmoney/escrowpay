@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
             <ul className="mt-4 space-y-4">
               <li>
                 <Link
-                  href="#"
+                  href="/features"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Features
@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/pricing"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Pricing
@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/api-docs"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   API
@@ -45,7 +45,7 @@ const Footer: React.FC = () => {
             <ul className="mt-4 space-y-4">
               <li>
                 <Link
-                  href="#"
+                  href="/"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   About
