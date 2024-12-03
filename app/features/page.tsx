@@ -58,8 +58,8 @@ const FeaturesPage: React.FC = () => {
                 Everything you need for secure blockchain payments
               </p>
               <p className="mt-4 max-w-2xl text-xl text-gray-400 lg:mx-auto">
-                EspeesPay provides a comprehensive suite of features to make
-                your cryptocurrency transactions smooth, secure, and efficient.
+                Escrow provides a comprehensive suite of features to make your
+                cryptocurrency transactions smooth, secure, and efficient.
               </p>
             </div>
 

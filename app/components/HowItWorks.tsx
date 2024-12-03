@@ -5,7 +5,7 @@ import { Wallet, ShieldCheck, BarChart } from "lucide-react";
 const steps = [
   {
     title: "Create an Account",
-    description: "Sign up for EspeesPay in minutes and verify your identity.",
+    description: "Sign up for Escrow in minutes and verify your identity.",
     icon: Wallet,
   },
   {
@@ -28,7 +28,7 @@ const HowItWorks: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            How EspeesPay Works
+            How Escrow Works
           </h2>
           <p className="mt-4 text-xl text-gray-400">
             Secure, transparent, and easy-to-use blockchain payments in three

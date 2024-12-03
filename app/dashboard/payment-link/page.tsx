@@ -55,8 +55,9 @@ const CreateLinkModal = () => {
               <SelectContent>
                 <SelectItem value="usd">USD</SelectItem>
                 <SelectItem value="eur">EUR</SelectItem>
-                <SelectItem value="btc">BTC</SelectItem>
-                <SelectItem value="eth">ETH</SelectItem>
+                <SelectItem value="ngn">NGN</SelectItem>
+                {/* <SelectItem value="btc">BTC</SelectItem>
+                <SelectItem value="eth">ETH</SelectItem> */}
               </SelectContent>
             </Select>
           </div>
@@ -146,12 +147,12 @@ const CopyLinkModal = () => {
           <div className="flex items-center space-x-2">
             <Input 
               readOnly 
-              value="https://espeespay.com/pay/link-1"
+              value="https://escrow-pay.vercel.app/pay/link-1"
               className="h-10 md:h-11"
             />
             <Button 
               className="h-10 md:h-11 bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={() => navigator.clipboard.writeText("https://espeespay.com/pay/link-1")}
+              onClick={() => navigator.clipboard.writeText("https://escrow-pay.vercel.app/pay/link-1")}
             >
               <Copy className="h-4 w-4" />
             </Button>
@@ -215,7 +216,7 @@ const PaymentLinkPage: React.FC = () => {
                   <div>
                     <h3 className="font-medium text-gray-900">Payment Link #{i}</h3>
                     <p className="text-sm text-gray-500">
-                      https://espeespay.com/pay/link-{i}
+                      https://escrow-pay.vercel.app/pay/link-{i}
                     </p>
                   </div>
                   <div className="flex space-x-2">
@@ -242,8 +243,9 @@ const PaymentLinkPage: React.FC = () => {
                 <SelectContent>
                   <SelectItem value="usd">USD</SelectItem>
                   <SelectItem value="eur">EUR</SelectItem>
-                  <SelectItem value="btc">BTC</SelectItem>
-                  <SelectItem value="eth">ETH</SelectItem>
+                  <SelectItem value="ngn">NGN</SelectItem>
+                  {/* <SelectItem value="btc">BTC</SelectItem>
+                  <SelectItem value="eth">ETH</SelectItem> */}
                 </SelectContent>
               </Select>
             </div>

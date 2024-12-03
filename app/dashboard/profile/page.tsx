@@ -34,6 +34,57 @@ import NotificationsModal from "../../../components/NotificationsModal";
 import SettingsModal from "../../../components/SettingsModal";
 
 const KYCVerificationModal = () => {
+  const [selectedIdType, setSelectedIdType] = React.useState("national_id");
+
+  const renderFormFields = () => {
+    switch (selectedIdType) {
+      case "passport":
+        return (
+          <div className="space-y-2">
+            <label className="text-sm md:text-base font-medium">Upload Passport (Front Side)</label>
+            <Input type="file" accept="image/*" className="h-10 md:h-11" />
+          </div>
+        );
+      case "nin":
+        return (
+          <>
+            <div className="space-y-2">
+              <label className="text-sm md:text-base font-medium">Upload NIN Card (Front Side)</label>
+              <Input type="file" accept="image/*" className="h-10 md:h-11" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm md:text-base font-medium">NIN Number (11 digits)</label>
+              <Input type="text" maxLength={11} className="h-10 md:h-11" />
+            </div>
+          </>
+        );
+      case "bvn":
+        return (
+          <div className="space-y-2">
+            <label className="text-sm md:text-base font-medium">BVN Number (10 digits)</label>
+            <Input type="text" maxLength={10} className="h-10 md:h-11" />
+          </div>
+        );
+      default: // national_id
+        return (
+          <>
+            <div className="space-y-2">
+              <label className="text-sm md:text-base font-medium">Upload National ID (Front Side)</label>
+              <Input type="file" accept="image/*" className="h-10 md:h-11" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm md:text-base font-medium">Upload National ID (Back Side)</label>
+              <Input type="file" accept="image/*" className="h-10 md:h-11" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm md:text-base font-medium">Selfie with ID</label>
+              <Input type="file" accept="image/*" className="h-10 md:h-11" />
+            </div>
+          </>
+        );
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -51,25 +102,18 @@ const KYCVerificationModal = () => {
         <div className="grid gap-4 py-2 md:py-4">
           <div className="space-y-2">
             <label className="text-sm md:text-base font-medium">ID Type</label>
-            <select className="w-full h-10 md:h-11 rounded-md border border-gray-200 px-3">
-              <option value="">Select ID Type</option>
-              <option value="passport">Passport</option>
-              <option value="driving_license">Driving License</option>
+            <select 
+              className="w-full h-10 md:h-11 rounded-md border border-gray-200 px-3"
+              value={selectedIdType}
+              onChange={(e) => setSelectedIdType(e.target.value)}
+            >
               <option value="national_id">National ID</option>
+              <option value="passport">Passport</option>
+              <option value="nin">NIN</option>
+              <option value="bvn">BVN</option>
             </select>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm md:text-base font-medium">Upload Front Side</label>
-            <Input type="file" accept="image/*" className="h-10 md:h-11" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm md:text-base font-medium">Upload Back Side</label>
-            <Input type="file" accept="image/*" className="h-10 md:h-11" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm md:text-base font-medium">Selfie with ID</label>
-            <Input type="file" accept="image/*" className="h-10 md:h-11" />
-          </div>
+          {renderFormFields()}
           <Button className="w-full h-10 md:h-11 mt-2 bg-blue-600 hover:bg-blue-700 text-white">
             Submit for Verification
           </Button>

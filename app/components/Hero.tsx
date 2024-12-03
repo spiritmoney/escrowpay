@@ -12,7 +12,7 @@ const Hero: React.FC = () => {
           <span className="block text-blue-500">Made Easy</span>
         </div>
         <div className="mt-6 max-w-2xl mx-auto text-xl text-gray-400">
-          EspeesPay enables businesses and individuals to securely buy and sell
+          Escrow enables businesses and individuals to securely buy and sell
           Espees using a blockchain escrow system.
         </div>
         <div className="mt-10 flex justify-center space-x-4">

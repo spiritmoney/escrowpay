@@ -11,7 +11,7 @@ const tiers = [
     name: "Starter",
     price: "Free",
     features: [
-      "Up to 1,000 transactions per month",
+      "Up to 100 transactions per month",
       "Basic API access",
       "Email support",
       "Basic analytics",
@@ -39,6 +39,7 @@ const tiers = [
       "24/7 phone, email, and chat support",
       "Custom integrations",
       "On-premise deployment options",
+      "Webhook support",
     ],
   },
 ];

@@ -57,10 +57,10 @@ const Features: React.FC = () => {
             Features
           </div>
           <div className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
-            Why Choose EspeesPay?
+            Why Choose Escrow?
           </div>
           <div className="mt-4 max-w-2xl text-xl text-gray-400 lg:mx-auto">
-            EspeesPay prioritizes security, transparency, and usability, making
+            Escrow prioritizes security, transparency, and usability, making
             it a trusted choice for cryptocurrency transactions worldwide.
           </div>
         </div>

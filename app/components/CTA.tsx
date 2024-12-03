@@ -9,10 +9,10 @@ const CTA: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            Ready to get started with EspeePay?
+            Ready to get started with Escrow?
           </h2>
           <p className="mt-4 text-xl text-blue-100">
-            Join thousands of businesses and individuals who trust EspeePay for
+            Join thousands of businesses and individuals who trust Escrow for
             their blockchain transactions.
           </p>
         </div>

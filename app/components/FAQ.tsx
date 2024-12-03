@@ -14,24 +14,24 @@ const faqs = [
       "Blockchain escrow is a secure method of holding and transferring funds using blockchain technology. It ensures that funds are only released when predefined conditions are met, providing security and trust for both parties in a transaction.",
   },
   {
-    question: "How does EspeesPay ensure transaction security?",
+    question: "How does Escrow ensure transaction security?",
     answer:
-      "EspeesPay uses advanced encryption and blockchain technology to secure all transactions. Our escrow system holds funds securely until all parties agree that the terms of the transaction have been met.",
+      "Escrow uses advanced encryption and blockchain technology to secure all transactions. Our escrow system holds funds securely until all parties agree that the terms of the transaction have been met.",
   },
   {
-    question: "What cryptocurrencies does EspeesPay support?",
+    question: "What cryptocurrencies does Escrow support?",
     answer:
-      "Currently, EspeesPay supports Espees, our native cryptocurrency. We plan to add support for other major cryptocurrencies in the near future.",
+      "Currently, Escrow supports Espees, our native cryptocurrency. We plan to add support for other major cryptocurrencies in the near future.",
   },
   {
     question: "How long does it take to set up an account?",
     answer:
-      "Setting up an EspeesPay account typically takes just a few minutes. However, depending on your location and the level of verification required, the full verification process may take up to 24 hours.",
+      "Setting up an Escrow account typically takes just a few minutes. However, depending on your location and the level of verification required, the full verification process may take up to 24 hours.",
   },
   {
     question: "Are there any transaction fees?",
     answer:
-      "EspeesPay charges a small fee for each transaction to cover the costs of maintaining the platform and ensuring security. Please refer to our pricing page for detailed information on our fee structure.",
+      "Escrow charges a small fee for each transaction to cover the costs of maintaining the platform and ensuring security. Please refer to our pricing page for detailed information on our fee structure.",
   },
 ];
 

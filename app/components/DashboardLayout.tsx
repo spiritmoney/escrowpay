@@ -35,10 +35,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       <aside
         className="w-16 md:w-64 bg-white shadow-md"
       >
-        <div className="p-4">
+        <div className="md:p-4">
           <h1 className="text-2xl font-bold text-blue-600">
-            <span className="block md:hidden">EP</span>
-            <span className="hidden md:block">EspeesPay</span>
+            <span className="block md:hidden text-[14px] text-center py-4">Escrow</span>
+            <span className="hidden md:block">Escrow</span>
           </h1>
         </div>
         <nav className="mt-8">

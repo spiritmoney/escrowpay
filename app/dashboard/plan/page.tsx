@@ -21,6 +21,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import NotificationsModal from "../../../components/NotificationsModal";
 import SettingsModal from "../../../components/SettingsModal";
+import banksData from '../../../banks.json'; // Adjust the path as necessary
 
 const plans = [
   {
@@ -180,10 +181,11 @@ const AddPaymentMethodModal = () => {
                     <SelectValue placeholder="Select your bank" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="chase">Chase Bank</SelectItem>
-                    <SelectItem value="boa">Bank of America</SelectItem>
-                    <SelectItem value="wells">Wells Fargo</SelectItem>
-                    <SelectItem value="citi">Citibank</SelectItem>
+                    {banksData.banks.map((bank) => (
+                      <SelectItem key={bank.code} value={bank.code}>
+                        {bank.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -196,17 +198,13 @@ const AddPaymentMethodModal = () => {
                 <Input placeholder="Account number" className="h-10 md:h-11" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm md:text-base font-medium">Routing Number</label>
-                <Input placeholder="Routing number" className="h-10 md:h-11" />
-              </div>
-              <div className="space-y-2">
                 <label className="text-sm md:text-base font-medium">Account Type</label>
                 <Select>
                   <SelectTrigger className="h-10 md:h-11">
                     <SelectValue placeholder="Select account type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="checking">Checking</SelectItem>
+                    <SelectItem value="current">Current</SelectItem>
                     <SelectItem value="savings">Savings</SelectItem>
                   </SelectContent>
                 </Select>
@@ -228,6 +226,8 @@ const AddPaymentMethodModal = () => {
     </Dialog>
   );
 };
+
+const currentPlanName = "Starter"; // Replace with dynamic value if needed
 
 const PlanPage: React.FC = () => {
   return (
@@ -278,7 +278,7 @@ const PlanPage: React.FC = () => {
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="font-medium text-gray-700">Monthly Transactions</span>
-                  <span className="text-blue-600 font-medium">850/1,000</span>
+                  <span className="text-blue-600 font-medium">85/100</span>
                 </div>
                 <Progress value={85} className="h-2 bg-blue-100" indicatorClassName="bg-blue-600" />
               </div>
@@ -286,7 +286,7 @@ const PlanPage: React.FC = () => {
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="font-medium text-gray-700">API Calls</span>
-                  <span className="text-blue-600 font-medium">4,500/5,000</span>
+                  <span className="text-blue-600 font-medium">450/500</span>
                 </div>
                 <Progress value={90} className="h-2 bg-blue-100" indicatorClassName="bg-blue-600" />
               </div>
@@ -312,7 +312,7 @@ const PlanPage: React.FC = () => {
             <Card 
               key={index} 
               className={`bg-white border-blue-100 relative overflow-hidden hover:border-blue-200 transition-colors ${
-                plan.name === "Pro" ? "ring-2 ring-blue-500 ring-offset-2" : ""
+                plan.name === currentPlanName ? "ring-2 ring-green-500 ring-offset-2" : ""
               }`}
             >
               {plan.name === "Pro" && (
@@ -347,7 +347,7 @@ const PlanPage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <UpgradeModal plan={plan} />
+                {plan.name !== currentPlanName && <UpgradeModal plan={plan} />}
               </CardContent>
             </Card>
           ))}

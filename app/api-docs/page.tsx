@@ -8,8 +8,8 @@ const languages = [
   {
     name: "JavaScript",
     code: `
-const espeepay = require('espeepay-node');
-const client = new espeepay.Client('YOUR_API_KEY');
+const escrow = require('escrow-node');
+const client = new escrow.Client('YOUR_API_KEY');
 
 const transaction = await client.createTransaction({
   amount: 100,
@@ -23,9 +23,9 @@ console.log(transaction);
   {
     name: "Python",
     code: `
-import espeepay
+import escrow
 
-client = espeepay.Client('YOUR_API_KEY')
+client = escrow.Client('YOUR_API_KEY')
 
 transaction = client.create_transaction(
   amount=100,
@@ -39,13 +39,13 @@ print(transaction)
   {
     name: "Ruby",
     code: `
-require 'espeepay'
+require 'escrow'
 
-client = Espeepay::Client.new('YOUR_API_KEY')
+client = Escrow::Client.new('YOUR_API_KEY')
 
 transaction = client.create_transaction(
   amount: 100,
-  currency: 'ESPEE',
+  currency: 'ESPEES',
   description: 'Test transaction'
 )
 
@@ -69,7 +69,7 @@ const ApiDocsPage: React.FC = () => {
             <p
               className="mt-4 text-xl text-gray-400"
             >
-              Integrate EspeesPay into your application with our easy-to-use
+              Integrate Escrow into your application with our easy-to-use
               API.
             </p>
             <div

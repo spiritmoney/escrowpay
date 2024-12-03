@@ -30,30 +30,43 @@ import NotificationsModal from "../../../components/NotificationsModal";
 import SettingsModal from "../../../components/SettingsModal";
 
 const cryptoBalances = [
-  { 
-    name: "Bitcoin (BTC)", 
-    amount: "2.5 BTC", 
-    value: "$87,534.23", 
-    change: "+5.2%",
-    icon: <Bitcoin className="h-4 w-4 text-blue-600" />
-  },
-  { 
-    name: "Ethereum (ETH)", 
-    amount: "15.8 ETH", 
-    value: "$32,456.78", 
-    change: "-2.1%",
+    { 
+    name: "Espees (ESP)", 
+    amount: "1000 ESP", 
+    value: "$1,234.56", 
+    change: "+1.5%",
     icon: <Coins className="h-4 w-4 text-blue-600" />
   },
-  { 
-    name: "USDT", 
-    amount: "5000 USDT", 
-    value: "$5,000.00", 
-    change: "0%",
-    icon: <DollarSign className="h-4 w-4 text-blue-600" />
-  }
+//   { 
+//     name: "Bitcoin (BTC)", 
+//     amount: "2.5 BTC", 
+//     value: "$87,534.23", 
+//     change: "+5.2%",
+//     icon: <Bitcoin className="h-4 w-4 text-blue-600" />
+//   },
+//   { 
+//     name: "Ethereum (ETH)", 
+//     amount: "15.8 ETH", 
+//     value: "$32,456.78", 
+//     change: "-2.1%",
+//     icon: <Coins className="h-4 w-4 text-blue-600" />
+//   },
+//   { 
+//     name: "USDT", 
+//     amount: "5000 USDT", 
+//     value: "$5,000.00", 
+//     change: "0%",
+//     icon: <DollarSign className="h-4 w-4 text-blue-600" />
+//   },
 ];
 
 const fiatBalances = [
+    {
+    name: "NGN",
+    amount: "₦5,678,910.00",
+    change: "+3.0%",
+    icon: <Wallet className="h-4 w-4 text-blue-600" />
+  },
   {
     name: "USD",
     amount: "$12,345.67",
@@ -65,7 +78,7 @@ const fiatBalances = [
     amount: "€8,234.50",
     change: "+1.8%",
     icon: <Wallet className="h-4 w-4 text-blue-600" />
-  }
+  },
 ];
 
 const SendMoneyModal = () => {
@@ -91,8 +104,10 @@ const SendMoneyModal = () => {
                 <SelectValue placeholder="Select asset type" />
               </SelectTrigger>
               <SelectContent className="max-h-[200px]">
-                <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
-                <SelectItem value="eth">Ethereum (ETH)</SelectItem>
+                <SelectItem value="esp">Espees (ESP)</SelectItem>
+                {/* <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
+                <SelectItem value="eth">Ethereum (ETH)</SelectItem> */}
+                <SelectItem value="ngn">Nigerian Naira (NGN)</SelectItem>
                 <SelectItem value="usd">US Dollar (USD)</SelectItem>
                 <SelectItem value="eur">Euro (EUR)</SelectItem>
               </SelectContent>
@@ -152,8 +167,10 @@ const RequestPaymentModal = () => {
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent className="max-h-[200px]">
-                <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
-                <SelectItem value="eth">Ethereum (ETH)</SelectItem>
+                <SelectItem value="esp">Espees (ESP)</SelectItem>
+                {/* <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
+                <SelectItem value="eth">Ethereum (ETH)</SelectItem> */}
+                <SelectItem value="ngn">Nigerian Naira (NGN)</SelectItem>
                 <SelectItem value="usd">US Dollar (USD)</SelectItem>
                 <SelectItem value="eur">Euro (EUR)</SelectItem>
               </SelectContent>
@@ -214,8 +231,10 @@ const ConvertCurrencyModal = () => {
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent className="max-h-[200px]">
-                <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
-                <SelectItem value="eth">Ethereum (ETH)</SelectItem>
+                <SelectItem value="esp">Espees (ESP)</SelectItem>
+                {/* <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
+                <SelectItem value="eth">Ethereum (ETH)</SelectItem> */}
+                <SelectItem value="ngn">Nigerian Naira (NGN)</SelectItem>
                 <SelectItem value="usd">US Dollar (USD)</SelectItem>
                 <SelectItem value="eur">Euro (EUR)</SelectItem>
               </SelectContent>
@@ -236,8 +255,10 @@ const ConvertCurrencyModal = () => {
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent className="max-h-[200px]">
-                <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
-                <SelectItem value="eth">Ethereum (ETH)</SelectItem>
+                <SelectItem value="esp">Espees (ESP)</SelectItem>
+                {/* <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
+                <SelectItem value="eth">Ethereum (ETH)</SelectItem> */}
+                <SelectItem value="ngn">Nigerian Naira (NGN)</SelectItem>
                 <SelectItem value="usd">US Dollar (USD)</SelectItem>
                 <SelectItem value="eur">Euro (EUR)</SelectItem>
               </SelectContent>
@@ -358,9 +379,9 @@ const BalancePage: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { desc: "Received BTC", time: "2 hours ago", amount: "0.05 BTC" },
+                  { desc: "Received ESP", time: "2 hours ago", amount: "0.05 ESP" },
                   { desc: "Sent USD", time: "5 hours ago", amount: "$123.45" },
-                  { desc: "Received ETH", time: "1 day ago", amount: "2.5 ETH" },
+                  { desc: "Received NGN", time: "1 day ago", amount: "N25,000" },
                 ].map((tx, i) => (
                   <div key={i} className="flex items-center justify-between py-2">
                     <div>
