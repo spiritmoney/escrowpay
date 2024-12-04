@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const languages = [
   {
@@ -61,20 +62,13 @@ const ApiDocsPage: React.FC = () => {
       <main className="flex-grow">
         <div className="py-24 bg-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2
-              className="text-3xl font-extrabold text-white sm:text-4xl"
-            >
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
               API Documentation
             </h2>
-            <p
-              className="mt-4 text-xl text-gray-400"
-            >
-              Integrate Escrow into your application with our easy-to-use
-              API.
+            <p className="mt-4 text-xl text-gray-400">
+              Integrate Escrow into your application with our easy-to-use API.
             </p>
-            <div
-              className="mt-12"
-            >
+            <div className="mt-12">
               <Tabs defaultValue={languages[0].name.toLowerCase()}>
                 <TabsList className="bg-gray-800">
                   {languages.map((lang) => (
@@ -96,9 +90,7 @@ const ApiDocsPage: React.FC = () => {
                 ))}
               </Tabs>
             </div>
-            <div
-              className="mt-12 space-y-8"
-            >
+            <div className="mt-12 space-y-8">
               <section>
                 <h3 className="text-2xl font-bold text-white">
                   Authentication
@@ -141,15 +133,15 @@ const ApiDocsPage: React.FC = () => {
                 </ul>
               </section>
             </div>
-            <div
-              className="mt-12"
-            >
-              <Button
-                size="lg"
-                className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
-              >
-                View Full API Reference
-              </Button>
+            <div className="mt-12">
+              <Link href="https://escro.readme.io/reference/">
+                <Button
+                  size="lg"
+                  className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
+                >
+                  View Full API Reference
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
