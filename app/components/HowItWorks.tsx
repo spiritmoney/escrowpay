@@ -5,19 +5,19 @@ import { Wallet, ShieldCheck, BarChart } from "lucide-react";
 const steps = [
   {
     title: "Create an Account",
-    description: "Sign up for Escrow in minutes and verify your identity.",
+    description: "Sign up for Escrow PayLink in minutes. Verify your identity and access multiple currency options - both crypto and fiat.",
     icon: Wallet,
   },
   {
     title: "Set Up Escrow",
     description:
-      "Create a secure escrow for your transaction with customizable terms.",
+      "Create secure, customizable payment links for your goods, services, or digital products. Define terms, set conditions, and share with buyers.",
     icon: ShieldCheck,
   },
   {
     title: "Complete Transaction",
     description:
-      "Funds are released only when all parties agree, ensuring a safe exchange.",
+      "Funds are held safely in our smart contract until all conditions are met. Once both parties are satisfied, funds are automatically released.",
     icon: BarChart,
   },
 ];
@@ -28,39 +28,51 @@ const HowItWorks: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            How Escrow Works
+            How Escrow PayLink Works
           </h2>
           <p className="mt-4 text-xl text-gray-400">
-            Secure, transparent, and easy-to-use blockchain payments in three
-            simple steps.
+            A blockchain-powered payment solution that simplifies secure transactions
           </p>
+          
+          <div className="mt-6 max-w-3xl mx-auto">
+            <p className="text-gray-400 leading-relaxed">
+              Escrow PayLink combines P2P trading flexibility with customizable payment links,
+              enabling seamless transactions for goods, services, and digital products.
+              With support for multiple currencies, our platform ensures your funds are
+              secure until all parties are satisfied.
+            </p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              "Multiple Currency Support",
+              "Smart Contract Security",
+              "Customizable Payment Links",
+              "Global Accessibility",
+              "Fraud Protection",
+              "Transparent Transactions"
+            ].map((feature, index) => (
+              <div key={index} className="bg-gray-800 rounded-lg p-6">
+                <p className="text-white font-semibold">{feature}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="mt-20">
           <div className="relative">
-            {/* Connecting line */}
-            {/* <div className="absolute left-1/2 w-0.5 h-full bg-blue-500 transform -translate-x-1/2" /> */}
-
-            {/* Steps */}
             {steps.map((step, index) => (
               <div
                 key={index}
-                className="relative z-10 flex items-center mb-12"
+                className="relative z-10 flex mb-12"
               >
-                <div
-                  className={`flex-1 ${
-                    index % 2 === 0 ? "text-right pr-8" : "pl-8"
-                  }`}
-                >
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mr-4">
+                  <step.icon className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
                   <h3 className="text-xl font-bold text-white">{step.title}</h3>
                   <p className="mt-2 text-gray-400">{step.description}</p>
                 </div>
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center">
-                  <step.icon className="w-6 h-6 text-white" />
-                </div>
-                {index % 2 === 1 && (
-                  <div className="flex-1" /> // Spacer for odd-numbered steps
-                )}
               </div>
             ))}
           </div>

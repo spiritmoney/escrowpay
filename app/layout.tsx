@@ -20,8 +20,8 @@ const montserrat = Montserrat({ subsets: ["latin"] });
 // });
 
 export const metadata: Metadata = {
-  title: "EspeesPay",
-  description: "EspeesPay ",
+  title: "Escrow PayLinQ",
+  description: "A Secure Multi-Currency Payment and Escrow Platform",
 };
 
 export default function RootLayout({

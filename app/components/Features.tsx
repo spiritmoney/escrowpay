@@ -1,49 +1,50 @@
 import React from "react";
 import {
   Shield,
-  Code,
-  CreditCard,
+  Link,
+  Users,
   Globe,
-  Clock,
+  Layout,
+  LockKeyhole,
   BarChartIcon as ChartBar,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const features = [
   {
-    name: "Secure Transactions",
+    name: "Escrow-Based Payments",
     description:
-      "Our blockchain escrow system ensures safe and transparent transactions, protecting both buyers and sellers.",
+      "Secure fund holding through smart contracts for both fiat and cryptocurrency, with flexible refund mechanisms and dispute resolution.",
     icon: Shield,
   },
   {
-    name: "Easy Integration",
+    name: "Payment Links",
     description:
-      "Seamless API integration for businesses of all sizes, with comprehensive documentation and dedicated support.",
-    icon: Code,
+      "Generate and share payment links for goods, services, or digital products via email, social media, or direct messaging.",
+    icon: Link,
   },
   {
-    name: "Customizable Checkout",
+    name: "P2P Trading",
     description:
-      "Fully customizable hosted checkout pages that seamlessly blend with your brand identity.",
-    icon: CreditCard,
+      "Secure direct transactions between buyers and sellers with customizable trade conditions and transparent tracking.",
+    icon: Users,
   },
   {
-    name: "Global Payments",
+    name: "Multi-Currency Support",
     description:
-      "Support for multiple currencies and languages, enabling you to conduct business on a global scale.",
+      "Accept payments in various fiat currencies and cryptocurrencies with automated currency conversion capabilities.",
     icon: Globe,
   },
   {
-    name: "Real-time Tracking",
+    name: "Advanced Security",
     description:
-      "Monitor your transactions in real-time with detailed reporting and analytics tools.",
-    icon: Clock,
+      "Multi-layer authentication, wallet encryption, and smart contract audits with real-time transaction monitoring.",
+    icon: LockKeyhole,
   },
   {
-    name: "Advanced Analytics",
+    name: "Business Tools & Analytics",
     description:
-      "Gain valuable insights into your payment flows with our advanced analytics and reporting features.",
+      "Comprehensive reporting with insights into payment trends, customer behavior, and API integration capabilities.",
     icon: ChartBar,
   },
 ];

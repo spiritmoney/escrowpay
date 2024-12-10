@@ -45,13 +45,13 @@ const Footer: React.FC = () => {
             <ul className="mt-4 space-y-4">
               <li>
                 <Link
-                  href="/"
+                  href="/about"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   About
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="#"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
                 >
                   Careers
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div>
@@ -74,30 +74,30 @@ const Footer: React.FC = () => {
               Support
             </h3>
             <ul className="mt-4 space-y-4">
-              <li>
+              {/* <li>
                 <Link
                   href="#"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Help Center
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
-                  href="#"
+                  href="/about/#contact-us"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Contact Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="#"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Status
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div>
@@ -107,7 +107,7 @@ const Footer: React.FC = () => {
             <ul className="mt-4 space-y-4">
               <li>
                 <Link
-                  href="#"
+                  href="/privacy"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Privacy
@@ -115,7 +115,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/terms"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Terms
@@ -123,7 +123,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/cookie-policy"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Cookie Policy
@@ -134,7 +134,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="mt-8 border-t border-gray-700 pt-8 flex justify-between items-center">
           <p className="text-base text-gray-400">
-            &copy; 2023 Escrow. All rights reserved.
+            &copy; 2024 Escrow PayLinQ. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <Link

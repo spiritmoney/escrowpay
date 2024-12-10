@@ -3,7 +3,6 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 
 const tiers = [
@@ -15,18 +14,18 @@ const tiers = [
       "Basic API access",
       "Email support",
       "Basic analytics",
-      "Custom checkout pages",
+      "Custom Payment Link pages",
     ],
   },
   {
     name: "Pro",
-    price: 10,
+    price: 19.99,
     features: [
       "Up to 2,000 transactions per month",
       "Full API access",
       "Priority email and chat support",
       "Advanced analytics and reporting",
-      "Custom checkout pages",
+      "Custom Payment Link pages",
     ],
   },
   {

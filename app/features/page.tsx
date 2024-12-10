@@ -1,45 +1,53 @@
 import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Shield, Code, CreditCard, Lock, Globe, Clock } from "lucide-react";
+import { 
+  Shield, 
+  Link, 
+  Users, 
+  Wallet, 
+  Layout, 
+  Lock, 
+  BarChart3 
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 const features = [
   {
-    name: "Secure Transactions",
+    name: "Escrow-Based Payments",
     description:
-      "Our blockchain escrow system ensures safe and transparent transactions for all parties involved.",
+      "Our smart contracts securely hold funds in fiat or cryptocurrency until transaction terms are met, with flexible refund and dispute resolution mechanisms.",
     icon: Shield,
   },
   {
-    name: "Easy Integration",
+    name: "Payment Links",
     description:
-      "Seamless API integration for businesses of all sizes, with comprehensive documentation and support.",
-    icon: Code,
+      "Generate and share payment links for goods, services, or digital products via email, social media, or direct messaging. Supports one-time payments, subscriptions, and donations.",
+    icon: Link,
   },
   {
-    name: "Customizable Checkout",
+    name: "P2P Trading",
     description:
-      "Hosted checkout pages that you can customize to match your brand and provide a seamless experience for your customers.",
-    icon: CreditCard,
+      "Facilitate secure, direct transactions between buyers and sellers with customizable trade conditions and transparent tracking for both fiat-to-crypto and crypto-to-crypto exchanges.",
+    icon: Users,
   },
   {
-    name: "Advanced Encryption",
+    name: "Multi-Currency Support",
     description:
-      "State-of-the-art encryption protocols to protect your data and transactions at all times.",
+      "Accept payments in various fiat currencies and cryptocurrencies with automated currency conversion and future plans for fiat on/off ramping.",
+    icon: Wallet,
+  },
+  {
+    name: "Advanced Security",
+    description:
+      "Multi-layer authentication, wallet encryption, smart contract audits, and anti-fraud measures including real-time transaction monitoring.",
     icon: Lock,
   },
   {
-    name: "Global Support",
+    name: "Business Tools and Analytics",
     description:
-      "Support for multiple currencies and languages, enabling you to conduct business on a global scale.",
-    icon: Globe,
-  },
-  {
-    name: "Real-time Tracking",
-    description:
-      "Monitor your transactions in real-time, with detailed reporting and analytics tools.",
-    icon: Clock,
+      "Track transactions in real-time with comprehensive reports, gain insights into payment trends and customer behavior, with APIs for automated workflows.",
+    icon: BarChart3,
   },
 ];
 

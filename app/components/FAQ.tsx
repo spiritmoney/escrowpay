@@ -9,29 +9,29 @@ import {
 
 const faqs = [
   {
-    question: "What is blockchain escrow?",
+    question: "What is Escrow PayLink?",
     answer:
-      "Blockchain escrow is a secure method of holding and transferring funds using blockchain technology. It ensures that funds are only released when predefined conditions are met, providing security and trust for both parties in a transaction.",
+      "Escrow PayLink is a blockchain-powered payment solution that combines P2P trading with customizable payment links. It's designed to facilitate secure transactions for businesses and individuals, whether you're selling goods, services, or digital products.",
   },
   {
-    question: "How does Escrow ensure transaction security?",
+    question: "How does Escrow PayLink ensure transaction security?",
     answer:
-      "Escrow uses advanced encryption and blockchain technology to secure all transactions. Our escrow system holds funds securely until all parties agree that the terms of the transaction have been met.",
+      "Escrow PayLink uses smart contracts to hold funds securely until all transaction conditions are met. This escrow mechanism ensures that both parties are protected throughout the transaction, reducing fraud and building trust between users.",
   },
   {
-    question: "What cryptocurrencies does Escrow support?",
+    question: "What payment methods does Escrow PayLink support?",
     answer:
-      "Currently, Escrow supports Espees, our native cryptocurrency. We plan to add support for other major cryptocurrencies in the near future.",
+      "Escrow PayLink supports both cryptocurrency and fiat currency transactions, providing flexibility for users worldwide. This multi-currency support allows for seamless international transactions.",
   },
   {
-    question: "How long does it take to set up an account?",
+    question: "How can I use Escrow PayLink for my business?",
     answer:
-      "Setting up an Escrow account typically takes just a few minutes. However, depending on your location and the level of verification required, the full verification process may take up to 24 hours.",
+      "Escrow PayLink is ideal for businesses, freelancers, and digital product sellers. You can create customized payment links, manage multiple transactions, and ensure secure payments for your goods or services through our escrow smart contracts.",
   },
   {
     question: "Are there any transaction fees?",
     answer:
-      "Escrow charges a small fee for each transaction to cover the costs of maintaining the platform and ensuring security. Please refer to our pricing page for detailed information on our fee structure.",
+      "Escrow PayLink charges a competitive fee for each transaction to cover smart contract operations and platform maintenance. The exact fee structure varies based on the transaction type and volume. Please visit our pricing page for detailed information.",
   },
 ];
 
@@ -51,10 +51,7 @@ const FAQ: React.FC = () => {
 
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
-            <AccordionItem 
-              key={`faq-${index}`} 
-              value={`item-${index}`}
-            >
+            <AccordionItem key={`faq-${index}`} value={`item-${index}`}>
               <AccordionTrigger className="text-white hover:text-blue-500 transition-colors duration-200">
                 {faq.question}
               </AccordionTrigger>

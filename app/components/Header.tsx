@@ -30,6 +30,12 @@ const Header: React.FC = () => {
             Pricing
           </Link>
           <Link
+            href="/about"
+            className="text-gray-300 hover:text-blue-500 transition-colors duration-200"
+          >
+            About us
+          </Link>
+          <Link
             href="/api-docs"
             className="text-gray-300 hover:text-blue-500 transition-colors duration-200"
           >
