@@ -140,7 +140,7 @@ const ApiDocsPage: React.FC = () => {
       // Replace with your actual auth check
       const isAuthenticated = localStorage.getItem("token");
       if (!isAuthenticated) {
-        router.push("/signin");
+        router.push("/auth/signin");
       } else {
         setIsLoading(false);
       }
