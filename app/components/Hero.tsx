@@ -8,12 +8,18 @@ const Hero: React.FC = () => {
     <div className="bg-black text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
         <div className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
-          <span className="block">Secure Blockchain Payments</span>
-          <span className="block text-blue-500">Made Easy</span>
+          <span className="block">Escrow PayLink</span>
+          <span className="block text-blue-500">Secure Trading Made Simple</span>
         </div>
-        <div className="mt-6 max-w-2xl mx-auto text-xl text-gray-400">
-          Escrow enables businesses and individuals to securely buy and sell
-          Espees using a blockchain escrow system.
+        <div className="mt-6 max-w-3xl mx-auto text-xl text-gray-400 space-y-4">
+          <p>
+            A blockchain-powered payment solution that combines P2P trading with
+            customizable payment links for seamless transactions.
+          </p>
+          <p className="text-lg">
+            Support for multiple currencies with smart contract escrow protection,
+            ensuring secure and trusted trades worldwide.
+          </p>
         </div>
         <div className="mt-10 flex justify-center space-x-4">
           <Link href="/auth/register">
