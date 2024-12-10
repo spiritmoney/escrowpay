@@ -109,6 +109,12 @@ const Header: React.FC = () => {
                 Pricing
               </Link>
               <Link
+                href="/about"
+                className="block p-5 text-blue-500 hover:bg-blue-200"
+              >
+                About us
+              </Link>
+              <Link
                 href="/api-docs"
                 className="block p-5 text-blue-500 hover:bg-blue-200"
               >
