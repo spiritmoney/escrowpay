@@ -63,15 +63,17 @@ const FeaturesPage: React.FC = () => {
                 Features
               </h2>
               <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
-                Everything you need for secure blockchain payments
+                Everything you need for Secure payments
               </p>
               <p className="mt-4 max-w-2xl text-xl text-gray-400 lg:mx-auto">
-                Escrow provides a comprehensive suite of features to make your
-                cryptocurrency transactions smooth, secure, and efficient.
+                Escrow PayLink combines P2P trading flexibility with customizable payment links, 
+                enabling secure transactions for goods, services, and digital products. Our 
+                smart contract escrow system supports both crypto and fiat currencies, 
+                ensuring trust and peace of mind for businesses and individuals worldwide.
               </p>
             </div>
 
-            <div className="mt-20">
+            <div className="mt-20 mb-10">
               <dl className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
                 {features.map((feature, index) => (
                   <div key={feature.name} className="relative">
