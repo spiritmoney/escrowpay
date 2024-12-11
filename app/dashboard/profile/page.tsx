@@ -32,6 +32,11 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import NotificationsModal from "../../../components/NotificationsModal";
 import SettingsModal from "../../../components/SettingsModal";
+import { useProfile, useUpdatePersonalInfo, useUpdateSecuritySettings, useUpdateApiSettings, useRegenerateApiKey, useKycStatus, useUpdateProfilePhoto, useDeleteProfilePhoto, type ProfileData } from "./api";
+import { toast } from "sonner";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
+import { useQueryClient } from "@tanstack/react-query";
+import PhoneInput from "@/app/components/PhoneInput";
 
 const KYCVerificationModal = () => {
   const [selectedIdType, setSelectedIdType] = React.useState("national_id");
@@ -123,8 +128,229 @@ const KYCVerificationModal = () => {
   );
 };
 
+const PhotoManagementDialog = ({ profile }: { profile: ProfileData | undefined }) => {
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+  const [showFallback, setShowFallback] = React.useState(!profile?.photoUrl);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  const updatePhoto = useUpdateProfilePhoto();
+  const deletePhoto = useDeleteProfilePhoto();
+
+  // Update showFallback when profile changes
+  React.useEffect(() => {
+    setShowFallback(!profile?.photoUrl);
+  }, [profile?.photoUrl]);
+
+  // Handle file selection
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setShowFallback(false);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle photo upload
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+    
+    try {
+      await updatePhoto.mutateAsync(selectedFile);
+      toast.success("Profile photo updated successfully");
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      setShowFallback(false);
+    } catch (error) {
+      toast.error("Failed to update profile photo");
+    }
+  };
+
+  // Handle photo deletion
+  const handleDelete = async () => {
+    try {
+      await deletePhoto.mutateAsync();
+      setShowFallback(true);
+      setPreviewUrl(null);
+      setSelectedFile(null);
+      toast.success("Profile photo removed");
+    } catch (error) {
+      toast.error("Failed to remove profile photo");
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full sm:w-auto border-blue-200 text-blue-600 hover:bg-blue-50">
+          Change Photo
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Profile Photo</DialogTitle>
+          <DialogDescription>
+            Upload a new profile photo or remove the existing one.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="flex justify-center">
+            <Avatar className="h-24 w-24 border-2 border-blue-200">
+              {!showFallback && (
+                <AvatarImage 
+                  src={previewUrl || profile?.photoUrl || undefined} 
+                  onError={() => setShowFallback(true)}
+                />
+              )}
+              <AvatarFallback className="bg-blue-100 text-blue-600">
+                {profile ? `${profile.firstName[0]}${profile.lastName[0]}` : 'U'}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="space-y-2">
+            <Input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Select Photo
+              </Button>
+              {!showFallback && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={deletePhoto.isPending}
+                >
+                  {deletePhoto.isPending ? "Removing..." : "Remove"}
+                </Button>
+              )}
+            </div>
+          </div>
+          {selectedFile && (
+            <Button
+              className="w-full"
+              onClick={handleUpload}
+              disabled={updatePhoto.isPending}
+            >
+              {updatePhoto.isPending ? "Uploading..." : "Upload Photo"}
+            </Button>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const ProfilePage: React.FC = () => {
   const [showApiKey, setShowApiKey] = React.useState(false);
+  const queryClient = useQueryClient();
+  
+  // Fetch profile data
+  const { data: profile, isLoading } = useProfile();
+  const { data: kycStatus } = useKycStatus();
+  
+  // Mutations
+  const updatePersonalInfo = useUpdatePersonalInfo();
+  const updateSecurity = useUpdateSecuritySettings();
+  const updateApiSettings = useUpdateApiSettings();
+  const regenerateApiKey = useRegenerateApiKey();
+
+  // Add state for switches
+  const [twoFactorEnabled, setTwoFactorEnabled] = React.useState(false);
+  const [apiAccess, setApiAccess] = React.useState(false);
+  const [webhookNotifications, setWebhookNotifications] = React.useState(false);
+
+  // Update states when profile data loads
+  React.useEffect(() => {
+    if (profile) {
+      setTwoFactorEnabled(profile.twoFactorEnabled);
+      setApiAccess(profile.apiAccess);
+      setWebhookNotifications(profile.webhookNotifications);
+    }
+  }, [profile]);
+
+  // Handle security settings toggle
+  const handleTwoFactorToggle = async (checked: boolean) => {
+    try {
+      await updateSecurity.mutateAsync({
+        twoFactorEnabled: checked,
+        currentPassword: '', // You might want to prompt for this
+        newPassword: '', // Only required when changing password
+      });
+      setTwoFactorEnabled(checked);
+      toast.success("2FA settings updated successfully");
+    } catch (error) {
+      toast.error("Failed to update 2FA settings");
+      // Revert the toggle if the API call fails
+      setTwoFactorEnabled(!checked);
+    }
+  };
+
+  // Handle API settings toggles
+  const handleApiSettingsToggle = async (setting: 'apiAccess' | 'webhooks', checked: boolean) => {
+    try {
+      await updateApiSettings.mutateAsync({
+        apiAccess: setting === 'apiAccess' ? checked : apiAccess,
+        webhookNotifications: setting === 'webhooks' ? checked : webhookNotifications,
+      });
+      
+      if (setting === 'apiAccess') {
+        setApiAccess(checked);
+      } else {
+        setWebhookNotifications(checked);
+      }
+      
+      toast.success("API settings updated successfully");
+    } catch (error) {
+      toast.error("Failed to update API settings");
+      // Revert the toggle if the API call fails
+      if (setting === 'apiAccess') {
+        setApiAccess(!checked);
+      } else {
+        setWebhookNotifications(!checked);
+      }
+    }
+  };
+
+  // Add the handlePhoneUpdate function
+  const handlePhoneUpdate = async () => {
+    const phoneInput = document.querySelector('input[name="phone"]') as HTMLInputElement;
+    const phoneValue = phoneInput?.value;
+    
+    try {
+      await updatePersonalInfo.mutateAsync({
+        phone: phoneValue || null,
+      });
+      toast.success("Phone number updated successfully");
+    } catch (error) {
+      toast.error("Failed to update phone number");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="h-full w-full flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -159,27 +385,66 @@ const ProfilePage: React.FC = () => {
             <CardContent className="p-4 md:p-6 space-y-4">
               <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <Avatar className="h-16 w-16 md:h-20 md:w-20 border-2 border-blue-200">
-                  <AvatarImage src="/placeholder-avatar.jpg" />
-                  <AvatarFallback className="bg-blue-100 text-blue-600">JD</AvatarFallback>
+                  {profile?.photoUrl && (
+                    <AvatarImage 
+                      src={profile.photoUrl} 
+                      onError={() => console.log('Avatar image failed to load')}
+                    />
+                  )}
+                  <AvatarFallback className="bg-blue-100 text-blue-600">
+                    {profile ? `${profile.firstName[0]}${profile.lastName[0]}` : 'U'}
+                  </AvatarFallback>
                 </Avatar>
-                <Button variant="outline" className="w-full sm:w-auto border-blue-200 text-blue-600 hover:bg-blue-50">
-                  Change Photo
-                </Button>
+                <PhotoManagementDialog profile={profile} />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Full Name</label>
-                <Input defaultValue="John Doe" className="border-blue-200" />
+                <Input 
+                  value={profile ? `${profile.firstName} ${profile.lastName}` : ''} 
+                  readOnly
+                  disabled
+                  className="border-blue-200 bg-gray-50" 
+                />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Email</label>
-                <Input defaultValue="john@example.com" type="email" className="border-blue-200" />
+                <Input 
+                  value={profile?.email || ''} 
+                  readOnly
+                  disabled
+                  className="border-blue-200 bg-gray-50" 
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Organisation</label>
+                <Input 
+                  value={profile?.organisation || ''} 
+                  readOnly
+                  disabled
+                  className="border-blue-200 bg-gray-50" 
+                />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Phone</label>
-                <Input defaultValue="+1 234 567 8900" type="tel" className="border-blue-200" />
+                <PhoneInput
+                  value={profile?.phone || null}
+                  onChange={(value) => {
+                    const phoneInput = document.querySelector('input[name="phone"]') as HTMLInputElement;
+                    if (phoneInput) {
+                      phoneInput.value = value;
+                    }
+                  }}
+                  className="border-blue-200"
+                />
+                <input type="hidden" name="phone" value={profile?.phone || ''} />
               </div>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                Save Changes
+              <Button 
+                type="button"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={updatePersonalInfo.isPending}
+                onClick={handlePhoneUpdate}
+              >
+                {updatePersonalInfo.isPending ? "Updating..." : "Update Phone Number"}
               </Button>
             </CardContent>
           </Card>
@@ -207,7 +472,12 @@ const ProfilePage: React.FC = () => {
               </div>
               <div className="flex items-center justify-between pt-2">
                 <Label htmlFor="2fa" className="text-sm font-medium">Two-Factor Authentication</Label>
-                <Switch id="2fa" />
+                <Switch 
+                  id="2fa"
+                  checked={twoFactorEnabled}
+                  onCheckedChange={handleTwoFactorToggle}
+                  disabled={updateSecurity.isPending}
+                />
               </div>
               <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                 Update Security Settings
@@ -257,7 +527,7 @@ const ProfilePage: React.FC = () => {
                 <CardTitle className="text-gray-900">API Settings</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="p-4 md:p-6 space-y-4">
+            <CardContent className="p-4 md:p-6">
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">API Key</label>
@@ -265,11 +535,12 @@ const ProfilePage: React.FC = () => {
                     <div className="relative flex-1">
                       <Input 
                         type={showApiKey ? "text" : "password"} 
-                        value="sk_test_123456789" 
+                        value={profile?.apiKey || ''} 
                         readOnly 
                         className="pr-10 border-blue-200"
                       />
                       <button
+                        type="button"
                         onClick={() => setShowApiKey(!showApiKey)}
                         className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
                       >
@@ -277,25 +548,50 @@ const ProfilePage: React.FC = () => {
                       </button>
                     </div>
                     <Button 
+                      type="button"
                       variant="outline" 
                       className="border-blue-200 text-blue-600 hover:bg-blue-50"
-                      onClick={() => navigator.clipboard.writeText("sk_test_123456789")}
+                      onClick={() => {
+                        if (profile?.apiKey) {
+                          navigator.clipboard.writeText(profile.apiKey);
+                          toast.success("API key copied to clipboard");
+                        }
+                      }}
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">API Access</span>
-                  <Switch id="api-access" defaultChecked />
+                  <Label htmlFor="api-access" className="text-sm font-medium">API Access</Label>
+                  <Switch 
+                    id="api-access"
+                    checked={apiAccess}
+                    onCheckedChange={(checked) => handleApiSettingsToggle('apiAccess', checked)}
+                    disabled={updateApiSettings.isPending}
+                  />
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Webhook Notifications</span>
-                  <Switch id="webhooks" />
+                  <Label htmlFor="webhooks" className="text-sm font-medium">Webhook Notifications</Label>
+                  <Switch 
+                    id="webhooks"
+                    checked={webhookNotifications}
+                    onCheckedChange={(checked) => handleApiSettingsToggle('webhooks', checked)}
+                    disabled={updateApiSettings.isPending}
+                  />
                 </div>
                 <Button 
+                  type="button"
                   variant="outline" 
                   className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
+                  onClick={async () => {
+                    try {
+                      await regenerateApiKey.mutateAsync();
+                      toast.success("API key regenerated successfully");
+                    } catch (error) {
+                      toast.error("Failed to regenerate API key");
+                    }
+                  }}
                 >
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Regenerate API Key
