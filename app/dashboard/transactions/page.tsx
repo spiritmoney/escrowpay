@@ -15,22 +15,124 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Bell, Settings as LucideSettings } from "lucide-react";
 import Link from "next/link";
-import { FileText } from "lucide-react";
+import { FileText, FileX, AlertCircle, Loader2 } from "lucide-react";
 import NotificationsModal from "../../../components/NotificationsModal";
 import SettingsModal from "../../../components/SettingsModal";
+import { useQuery } from '@tanstack/react-query';
+import { fetchTransactions } from './api';
+import { useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { 
+  Transaction, 
+  TransactionStatus, 
+  TransactionQueryParams, 
+  ApiError 
+} from './types';
+import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 const TransactionsPage: React.FC = () => {
-  const transactions = [
-    {
-      id: "TX123",
-      date: "2024-02-20",
-      type: "Payment",
-      amount: 500.00,
-      status: "Completed",
-      recipient: "John Doe",
-    },
-    // Add more mock transactions as needed
-  ];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<TransactionQueryParams>({});
+
+  const { data: transactions, isLoading, error } = useQuery({
+    queryKey: ['transactions', filters, searchQuery],
+    queryFn: () => fetchTransactions({ ...filters, search: searchQuery }),
+  });
+
+  const renderTableContent = () => {
+    if (isLoading) {
+      return (
+        <TableRow>
+          <TableCell colSpan={6} className="h-32">
+            <div className="flex flex-col items-center justify-center space-y-2 text-gray-500">
+              <LoadingSpinner />
+              <p>Loading transactions...</p>
+            </div>
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    if (error) {
+      const isApiError = (error: unknown): error is ApiError => {
+        return (
+          typeof error === 'object' &&
+          error !== null &&
+          'statusCode' in error &&
+          'message' in error &&
+          'timestamp' in error &&
+          'path' in error
+        );
+      };
+
+      const errorMessage = isApiError(error) 
+        ? error.message 
+        : 'An unexpected error occurred';
+
+      return (
+        <TableRow>
+          <TableCell colSpan={6} className="h-32">
+            <Alert variant="destructive" className="mx-auto max-w-md">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                {errorMessage}
+              </AlertDescription>
+            </Alert>
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    if (!transactions?.length) {
+      return (
+        <TableRow>
+          <TableCell colSpan={6} className="h-32">
+            <div className="flex flex-col items-center justify-center space-y-2 text-gray-500">
+              <FileX className="h-8 w-8 text-gray-400" />
+              <p className="text-sm text-gray-600">No transactions found</p>
+              {searchQuery && (
+                <p className="text-xs text-gray-400">
+                  Try adjusting your search or filters
+                </p>
+              )}
+            </div>
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    return transactions.map((tx) => (
+      <TableRow key={tx.id} className="border-blue-100">
+        <TableCell className="text-gray-900">{tx.id}</TableCell>
+        <TableCell>{new Date(tx.date).toLocaleDateString()}</TableCell>
+        <TableCell>{tx.type}</TableCell>
+        <TableCell>${tx.amount.toFixed(2)}</TableCell>
+        <TableCell>
+          <span className={getStatusBadgeClass(tx.status)}>
+            {tx.status}
+          </span>
+        </TableCell>
+        <TableCell>{tx.recipient}</TableCell>
+      </TableRow>
+    ));
+  };
+
+  const getStatusBadgeClass = (status: TransactionStatus) => {
+    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
+    switch (status) {
+      case TransactionStatus.COMPLETED:
+        return `${baseClasses} bg-green-100 text-green-800`;
+      case TransactionStatus.PENDING:
+        return `${baseClasses} bg-yellow-100 text-yellow-800`;
+      case TransactionStatus.FAILED:
+        return `${baseClasses} bg-red-100 text-red-800`;
+      case TransactionStatus.CANCELLED:
+        return `${baseClasses} bg-gray-100 text-gray-800`;
+      default:
+        return baseClasses;
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -60,7 +162,12 @@ const TransactionsPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                 <div className="relative flex-1 sm:flex-none">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-blue-600" />
-                  <Input placeholder="Search..." className="pl-8 w-full border-blue-200" />
+                  <Input 
+                    placeholder="Search..." 
+                    className="pl-8 w-full border-blue-200" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
                 <Button variant="outline" className="border-blue-200 text-blue-600 hover:bg-blue-50">
                   <Filter className="mr-2 h-4 w-4" />
@@ -83,16 +190,7 @@ const TransactionsPage: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transactions.map((tx) => (
-                    <TableRow key={tx.id} className="border-blue-100">
-                      <TableCell className="text-gray-900">{tx.id}</TableCell>
-                      <TableCell>{tx.date}</TableCell>
-                      <TableCell>{tx.type}</TableCell>
-                      <TableCell>${tx.amount.toFixed(2)}</TableCell>
-                      <TableCell>{tx.status}</TableCell>
-                      <TableCell>{tx.recipient}</TableCell>
-                    </TableRow>
-                  ))}
+                  {renderTableContent()}
                 </TableBody>
               </Table>
             </div>

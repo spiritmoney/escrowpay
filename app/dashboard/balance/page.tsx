@@ -376,7 +376,13 @@ const BalancePage: React.FC = () => {
   const { data: balances, isLoading: isBalancesLoading, error: balancesError } = useBalances();
   const { data: recentActivity, isLoading: isActivityLoading, error: activityError } = useRecentActivity();
 
-  if (isBalancesLoading || isActivityLoading) return <LoadingSpinner />;
+  if (isBalancesLoading || isActivityLoading) return (
+    <DashboardLayout>
+      <div className="h-full w-full flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    </DashboardLayout>
+  );
 
   if (balancesError || activityError) {
     return (
