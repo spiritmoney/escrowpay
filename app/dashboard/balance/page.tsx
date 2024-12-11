@@ -23,65 +23,67 @@ import {
   Coins,
   FileText,
   Bell,
-  Settings as LucideSettings
+  Settings as LucideSettings,
+  AlertCircle
 } from "lucide-react";
 import Link from "next/link";
 import NotificationsModal from "../../../components/NotificationsModal";
 import SettingsModal from "../../../components/SettingsModal";
+import { useBalances, useSendMoney, useRequestPayment, useConvertCurrency, useRecentActivity } from "./api";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
+import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-const cryptoBalances = [
-    { 
-    name: "Espees (ESP)", 
-    amount: "1000 ESP", 
-    value: "$1,234.56", 
-    change: "+1.5%",
-    icon: <Coins className="h-4 w-4 text-blue-600" />
-  },
-//   { 
-//     name: "Bitcoin (BTC)", 
-//     amount: "2.5 BTC", 
-//     value: "$87,534.23", 
-//     change: "+5.2%",
-//     icon: <Bitcoin className="h-4 w-4 text-blue-600" />
-//   },
-//   { 
-//     name: "Ethereum (ETH)", 
-//     amount: "15.8 ETH", 
-//     value: "$32,456.78", 
-//     change: "-2.1%",
-//     icon: <Coins className="h-4 w-4 text-blue-600" />
-//   },
-//   { 
-//     name: "USDT", 
-//     amount: "5000 USDT", 
-//     value: "$5,000.00", 
-//     change: "0%",
-//     icon: <DollarSign className="h-4 w-4 text-blue-600" />
-//   },
-];
+interface FiatBalance {
+  NGN: number;
+  USD: number;
+  EUR: number;
+  NGN_change: number;
+  USD_change: number;
+  EUR_change: number;
+}
 
-const fiatBalances = [
-    {
-    name: "NGN",
-    amount: "₦5,678,910.00",
-    change: "+3.0%",
-    icon: <Wallet className="h-4 w-4 text-blue-600" />
-  },
-  {
-    name: "USD",
-    amount: "$12,345.67",
-    change: "+2.5%",
-    icon: <DollarSign className="h-4 w-4 text-blue-600" />
-  },
-  {
-    name: "EUR",
-    amount: "€8,234.50",
-    change: "+1.8%",
-    icon: <Wallet className="h-4 w-4 text-blue-600" />
-  },
-];
+interface CryptoBalance {
+  ESP: {
+    amount: number;
+    usdValue: number;
+  };
+  ESP_change: number;
+}
+
+interface Balances {
+  fiat: FiatBalance;
+  crypto: CryptoBalance;
+}
 
 const SendMoneyModal = () => {
+  const sendMoney = useSendMoney();
+  const [formData, setFormData] = useState({
+    assetType: "FIAT",
+    currency: "",
+    recipientAddress: "",
+    amount: 0,
+    note: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        amount: formData.amount,
+        assetType: formData.assetType,
+        recipient: formData.recipientAddress,
+        currency: formData.currency,
+        note: formData.note
+      };
+      const response = await sendMoney.mutateAsync(payload);
+      toast.success(response.message || "Money sent successfully");
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to send money";
+      toast.error(errorMessage);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -96,29 +98,68 @@ const SendMoneyModal = () => {
             Enter the recipient and amount details below.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-2 md:py-4">
+        <form onSubmit={handleSubmit} className="grid gap-4 py-2 md:py-4">
           <div className="space-y-2">
             <label className="text-sm md:text-base font-medium">Asset Type</label>
-            <Select>
+            <Select 
+              defaultValue="FIAT"
+              onValueChange={(value) => setFormData(prev => ({ 
+                ...prev, 
+                assetType: value,
+                currency: "" // Reset currency when asset type changes
+              }))}
+            >
               <SelectTrigger className="w-full h-10 md:h-11">
                 <SelectValue placeholder="Select asset type" />
               </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="FIAT">Fiat Currency</SelectItem>
+                <SelectItem value="CRYPTO">Cryptocurrency</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm md:text-base font-medium">Currency</label>
+            <Select onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}>
+              <SelectTrigger className="w-full h-10 md:h-11">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
               <SelectContent className="max-h-[200px]">
-                <SelectItem value="esp">Espees (ESP)</SelectItem>
-                {/* <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
-                <SelectItem value="eth">Ethereum (ETH)</SelectItem> */}
-                <SelectItem value="ngn">Nigerian Naira (NGN)</SelectItem>
-                <SelectItem value="usd">US Dollar (USD)</SelectItem>
-                <SelectItem value="eur">Euro (EUR)</SelectItem>
+                {formData.assetType === "FIAT" ? (
+                  <>
+                    <SelectItem value="NGN">Nigerian Naira (NGN)</SelectItem>
+                    <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                    <SelectItem value="EUR">Euro (EUR)</SelectItem>
+                  </>
+                ) : (
+                  <>
+                    <SelectItem value="ESP">Espees (ESP)</SelectItem>
+                    {/* Add other crypto options as needed */}
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
-            <label className="text-sm md:text-base font-medium">Recipient Address/Email</label>
+            <label className="text-sm md:text-base font-medium">
+              {formData.assetType === "FIAT" ? "Recipient Email" : "Recipient Email or Wallet Address"}
+            </label>
             <Input 
-              placeholder="Enter recipient" 
+              value={formData.recipientAddress}
+              onChange={(e) => setFormData(prev => ({ ...prev, recipientAddress: e.target.value }))}
+              placeholder={formData.assetType === "FIAT" 
+                ? "Enter recipient email" 
+                : "Enter recipient email or wallet address"
+              }
+              type={formData.assetType === "FIAT" ? "email" : "text"}
               className="h-10 md:h-11"
             />
+            {formData.assetType === "CRYPTO" && (
+              <p className="text-sm text-gray-500">
+                You can enter either an email address or a valid wallet address
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <label className="text-sm md:text-base font-medium">Amount</label>
@@ -126,6 +167,8 @@ const SendMoneyModal = () => {
               type="number" 
               placeholder="0.00" 
               className="h-10 md:h-11"
+              value={formData.amount}
+              onChange={(e) => setFormData(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
             />
           </div>
           <div className="space-y-2">
@@ -133,18 +176,40 @@ const SendMoneyModal = () => {
             <Input 
               placeholder="Add a note" 
               className="h-10 md:h-11"
+              value={formData.note}
+              onChange={(e) => setFormData(prev => ({ ...prev, note: e.target.value }))}
             />
           </div>
-          <Button className="w-full h-10 md:h-11 mt-2 bg-blue-600 hover:bg-blue-700 text-white">
-            Send
+          <Button type="submit" className="w-full h-10 md:h-11 mt-2 bg-blue-600 hover:bg-blue-700 text-white">
+            {sendMoney.isPending ? "Sending..." : "Send"}
           </Button>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
 };
 
+
 const RequestPaymentModal = () => {
+  const requestPayment = useRequestPayment();
+  const [formData, setFormData] = useState({
+    currency: "",
+    amount: 0,
+    payerEmail: "",
+    description: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await requestPayment.mutateAsync(formData);
+      toast.success(response.message || "Payment request created successfully");
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to create payment request";
+      toast.error(errorMessage);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -159,20 +224,20 @@ const RequestPaymentModal = () => {
             Create a payment request to share with others.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-2 md:py-4">
+        <form onSubmit={handleSubmit} className="grid gap-4 py-2 md:py-4">
           <div className="space-y-2">
             <label className="text-sm md:text-base font-medium">Currency</label>
-            <Select>
+            <Select onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}>
               <SelectTrigger className="w-full h-10 md:h-11">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent className="max-h-[200px]">
-                <SelectItem value="esp">Espees (ESP)</SelectItem>
+                <SelectItem value="ESP">Espees (ESP)</SelectItem>
                 {/* <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
                 <SelectItem value="eth">Ethereum (ETH)</SelectItem> */}
-                <SelectItem value="ngn">Nigerian Naira (NGN)</SelectItem>
-                <SelectItem value="usd">US Dollar (USD)</SelectItem>
-                <SelectItem value="eur">Euro (EUR)</SelectItem>
+                <SelectItem value="NGN">Nigerian Naira (NGN)</SelectItem>
+                <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                <SelectItem value="EUR">Euro (EUR)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -182,6 +247,8 @@ const RequestPaymentModal = () => {
               type="number" 
               placeholder="0.00" 
               className="h-10 md:h-11"
+              value={formData.amount}
+              onChange={(e) => setFormData(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
             />
           </div>
           <div className="space-y-2">
@@ -190,6 +257,8 @@ const RequestPaymentModal = () => {
               type="email" 
               placeholder="Enter email" 
               className="h-10 md:h-11"
+              value={formData.payerEmail}
+              onChange={(e) => setFormData(prev => ({ ...prev, payerEmail: e.target.value }))}
             />
           </div>
           <div className="space-y-2">
@@ -197,18 +266,39 @@ const RequestPaymentModal = () => {
             <Input 
               placeholder="What's this for?" 
               className="h-10 md:h-11"
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
             />
           </div>
-          <Button className="w-full h-10 md:h-11 mt-2 bg-blue-600 hover:bg-blue-700 text-white">
+          <Button type="submit" className="w-full h-10 md:h-11 mt-2 bg-blue-600 hover:bg-blue-700 text-white">
             Create Request
           </Button>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
 };
 
 const ConvertCurrencyModal = () => {
+  const convertCurrency = useConvertCurrency();
+  const [formData, setFormData] = useState({
+    from: "",
+    to: "",
+    amount: 0
+  });
+  const [conversionRate, setConversionRate] = useState<number | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await convertCurrency.mutateAsync(formData);
+      toast.success(response.message || "Currency converted successfully");
+    } catch (error: any) {
+      const errorMessage = error.message || "Failed to convert currency or Insufficient balance for conversion";
+      toast.error(errorMessage);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -223,20 +313,20 @@ const ConvertCurrencyModal = () => {
             Convert between different currencies and cryptocurrencies.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-2 md:py-4">
+        <form onSubmit={handleSubmit} className="grid gap-4 py-2 md:py-4">
           <div className="space-y-2">
             <label className="text-sm md:text-base font-medium">From</label>
-            <Select>
+            <Select onValueChange={(value) => setFormData(prev => ({ ...prev, from: value }))}>
               <SelectTrigger className="w-full h-10 md:h-11">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent className="max-h-[200px]">
-                <SelectItem value="esp">Espees (ESP)</SelectItem>
+                <SelectItem value="ESP">Espees (ESP)</SelectItem>
                 {/* <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
                 <SelectItem value="eth">Ethereum (ETH)</SelectItem> */}
-                <SelectItem value="ngn">Nigerian Naira (NGN)</SelectItem>
-                <SelectItem value="usd">US Dollar (USD)</SelectItem>
-                <SelectItem value="eur">Euro (EUR)</SelectItem>
+                <SelectItem value="NGN">Nigerian Naira (NGN)</SelectItem>
+                <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                <SelectItem value="EUR">Euro (EUR)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -246,37 +336,111 @@ const ConvertCurrencyModal = () => {
               type="number" 
               placeholder="0.00" 
               className="h-10 md:h-11"
+              value={formData.amount}
+              onChange={(e) => setFormData(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
             />
           </div>
           <div className="space-y-2">
             <label className="text-sm md:text-base font-medium">To</label>
-            <Select>
+            <Select onValueChange={(value) => setFormData(prev => ({ ...prev, to: value }))}>
               <SelectTrigger className="w-full h-10 md:h-11">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent className="max-h-[200px]">
-                <SelectItem value="esp">Espees (ESP)</SelectItem>
+                <SelectItem value="ESP">Espees (ESP)</SelectItem>
                 {/* <SelectItem value="btc">Bitcoin (BTC)</SelectItem>
                 <SelectItem value="eth">Ethereum (ETH)</SelectItem> */}
-                <SelectItem value="ngn">Nigerian Naira (NGN)</SelectItem>
-                <SelectItem value="usd">US Dollar (USD)</SelectItem>
-                <SelectItem value="eur">Euro (EUR)</SelectItem>
+                <SelectItem value="NGN">Nigerian Naira (NGN)</SelectItem>
+                <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                <SelectItem value="EUR">Euro (EUR)</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="pt-2">
-            <p className="text-sm md:text-base text-gray-500">Estimated rate: 1 BTC ≈ $45,000</p>
+            {conversionRate && (
+              <p className="text-sm md:text-base text-gray-500">
+                Estimated rate: 1 {formData.from} ≈ {conversionRate} {formData.to}
+              </p>
+            )}
           </div>
-          <Button className="w-full h-10 md:h-11 mt-2 bg-blue-600 hover:bg-blue-700 text-white">
+          <Button type="submit" className="w-full h-10 md:h-11 mt-2 bg-blue-600 hover:bg-blue-700 text-white">
             Convert
           </Button>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
 };
 
 const BalancePage: React.FC = () => {
+  const { data: balances, isLoading: isBalancesLoading, error: balancesError } = useBalances();
+  const { data: recentActivity, isLoading: isActivityLoading, error: activityError } = useRecentActivity();
+
+  if (isBalancesLoading || isActivityLoading) return <LoadingSpinner />;
+
+  if (balancesError || activityError) {
+    return (
+      <DashboardLayout>
+        <div className="p-4 md:p-6">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              {balancesError ? "Failed to load balance information" : "Failed to load recent activity"}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!balances) {
+    return (
+      <DashboardLayout>
+        <div className="p-4 md:p-6">
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>No Data Available</AlertTitle>
+            <AlertDescription>
+              No balance information is currently available. Please try again later.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const fiatBalances = [
+    {
+      name: "NGN",
+      amount: `₦${balances.fiat.NGN.toLocaleString()}`,
+      change: `${balances.fiat.NGN_change ? (balances.fiat.NGN_change >= 0 ? '+' : '') + balances.fiat.NGN_change : '0'}%`,
+      icon: <Wallet className="h-4 w-4 text-blue-600" />
+    },
+    {
+      name: "USD",
+      amount: `$${balances.fiat.USD.toLocaleString()}`,
+      change: `${balances.fiat.USD_change ? (balances.fiat.USD_change >= 0 ? '+' : '') + balances.fiat.USD_change : '0'}%`,
+      icon: <Wallet className="h-4 w-4 text-blue-600" />
+    },
+    {
+      name: "EUR",
+      amount: `€${balances.fiat.EUR.toLocaleString()}`,
+      change: `${balances.fiat.EUR_change ? (balances.fiat.EUR_change >= 0 ? '+' : '') + balances.fiat.EUR_change : '0'}%`,
+      icon: <Wallet className="h-4 w-4 text-blue-600" />
+    },
+  ];
+
+  const cryptoBalances = [
+    {
+      name: "Espees (ESP)",
+      amount: `${balances.crypto.ESP.amount} ESP`,
+      value: `$${balances.crypto.ESP.usdValue.toLocaleString()}`,
+      change: `${balances.crypto.ESP_change ? (balances.crypto.ESP_change >= 0 ? '+' : '') + balances.crypto.ESP_change : '0'}%`,
+      icon: <Coins className="h-4 w-4 text-blue-600" />
+    }
+  ];
+
   return (
     <DashboardLayout>
       <div className="p-4 md:p-6 space-y-4 md:space-y-6 bg-gray-100">
@@ -377,21 +541,29 @@ const BalancePage: React.FC = () => {
               <CardTitle className="text-gray-900">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {[
-                  { desc: "Received ESP", time: "2 hours ago", amount: "0.05 ESP" },
-                  { desc: "Sent USD", time: "5 hours ago", amount: "$123.45" },
-                  { desc: "Received NGN", time: "1 day ago", amount: "N25,000" },
-                ].map((tx, i) => (
-                  <div key={i} className="flex items-center justify-between py-2">
-                    <div>
-                      <p className="font-medium">{tx.desc}</p>
-                      <p className="text-sm text-gray-500">{tx.time}</p>
+              {recentActivity && recentActivity.length > 0 ? (
+                <div className="space-y-4">
+                  {recentActivity.map((tx, i) => (
+                    <div key={i} className="flex items-center justify-between py-2">
+                      <div>
+                        <p className="font-medium">{tx.desc}</p>
+                        <p className="text-sm text-gray-500">{tx.time}</p>
+                      </div>
+                      <div className="font-medium">{tx.amount}</div>
                     </div>
-                    <div className="font-medium">{tx.amount}</div>
+                  ))}
+                </div>
+              ) : (
+                <Alert className="bg-gray-50 border-gray-200">
+                  <div className="flex items-center gap-x-2">
+                    <AlertCircle className="h-4 w-4 text-gray-500" />
+                    <AlertTitle className="text-gray-600">No Recent Activity</AlertTitle>
                   </div>
-                ))}
-              </div>
+                  <AlertDescription className="text-gray-500 mt-2">
+                    When you make transactions, they will appear here.
+                  </AlertDescription>
+                </Alert>
+              )}
             </CardContent>
           </Card>
         </div>

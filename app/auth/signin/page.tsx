@@ -38,7 +38,9 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = async (values: LoginValues) => {
     try {
-      await login.mutateAsync(values);
+      const response = await login.mutateAsync(values);
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('api_key', response.api_key);
       toast.success("Successfully logged in!");
     } catch (error: any) {
       const message = error.response?.data?.message || "Failed to log in. Please check your credentials.";

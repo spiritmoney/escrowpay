@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://espeespay-backend.onrender.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:10000";
 
 export const getAuthHeaders = () => {
   // Get tokens from localStorage
