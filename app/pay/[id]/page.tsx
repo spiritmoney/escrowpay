@@ -25,11 +25,11 @@ const mockPaymentLink = {
   type: "product",
 };
 
-export const Icons = {
-  spinner: Loader2,
-};
-
 const Page: React.FC = () => {
+  const Icons = {
+    spinner: Loader2,
+  };
+
   const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,7 +57,7 @@ const Page: React.FC = () => {
             <CardDescription>{paymentLink.description}</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handlePayment}>
+            <form onClick={handlePayment}>
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="amount">Amount</Label>
@@ -86,20 +86,20 @@ const Page: React.FC = () => {
                   </div>
                 </div>
               </div>
+              <div className="px-6 py-4">
+                <Button
+                  className="w-full"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Pay {paymentLink.amount} {paymentLink.currency}
+                </Button>
+              </div>
             </form>
           </CardContent>
-          <div className="px-6 py-4">
-            <Button
-              className="w-full"
-              onClick={handlePayment}
-              disabled={isLoading}
-            >
-              {isLoading && (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Pay {paymentLink.amount} {paymentLink.currency}
-            </Button>
-          </div>
         </Card>
       </div>
     </div>
