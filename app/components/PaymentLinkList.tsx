@@ -12,48 +12,38 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Copy, ExternalLink } from "lucide-react";
+import { useDisablePaymentLink } from "@/app/dashboard/payment-link/api";
+import { toast } from "sonner";
 
-const mockPaymentLinks = [
-  {
-    id: 1,
-    name: "Premium Product",
-    amount: 99.99,
-    currency: "USD",
-    type: "product",
-    status: "active",
-    url: "https://espeepay.com/pay/1",
-  },
-  {
-    id: 2,
-    name: "Consulting Service",
-    amount: 150.0,
-    currency: "EUR",
-    type: "service",
-    status: "active",
-    url: "https://espeepay.com/pay/2",
-  },
-  {
-    id: 3,
-    name: "E-book Download",
-    amount: 9.99,
-    currency: "GBP",
-    type: "digital",
-    status: "inactive",
-    url: "https://espeepay.com/pay/3",
-  },
-  {
-    id: 4,
-    name: "ESPEE Token Sale",
-    amount: 100.0,
-    currency: "ESPEE",
-    type: "crypto",
-    status: "active",
-    url: "https://espeepay.com/pay/4",
-  },
-];
+interface PaymentLink {
+  id: string;
+  name: string;
+  url: string;
+  status: string;
+  type: string;
+  transactionType: string;
+  defaultAmount: number;
+  defaultCurrency: string;
+  blockchainStatus?: string;
+}
 
-const PaymentLinksList: React.FC = () => {
-  const getPaymentUrl = (id: number) => {
+interface PaymentLinksListProps {
+  links: PaymentLink[];
+}
+
+const PaymentLinksList: React.FC<PaymentLinksListProps> = ({ links }) => {
+  const disablePaymentLink = useDisablePaymentLink();
+
+  const handleDisable = async (linkId: string) => {
+    try {
+      await disablePaymentLink.mutateAsync(linkId);
+      toast.success("Payment link disabled successfully");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to disable payment link");
+    }
+  };
+
+  const getPaymentUrl = (id: string) => {
     if (typeof window !== 'undefined') {
       return `${window.location.origin}/pay/${id}`;
     }
@@ -79,15 +69,16 @@ const PaymentLinksList: React.FC = () => {
                 <TableHead>Amount</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Blockchain Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockPaymentLinks.map((link) => (
+              {links.map((link) => (
                 <TableRow key={link.id}>
                   <TableCell>{link.name}</TableCell>
                   <TableCell>
-                    {link.amount} {link.currency}
+                    {link.defaultAmount} {link.defaultCurrency}
                   </TableCell>
                   <TableCell>{link.type}</TableCell>
                   <TableCell>
@@ -98,6 +89,13 @@ const PaymentLinksList: React.FC = () => {
                     >
                       {link.status}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {link.blockchainStatus && (
+                      <Badge variant="outline">
+                        {link.blockchainStatus}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
@@ -119,6 +117,16 @@ const PaymentLinksList: React.FC = () => {
                           Open
                         </a>
                       </Button>
+                      {link.status === 'active' && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDisable(link.id)}
+                          disabled={disablePaymentLink.isPending}
+                        >
+                          Disable
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
