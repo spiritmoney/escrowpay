@@ -14,35 +14,36 @@ const endpoints = {
       name: "Create Transaction",
       method: "POST",
       path: "/transactions",
-      description: "Initialize a new escrow transaction for secure payment"
+      description: "Initialize a new escrow transaction for secure payment",
     },
     {
       name: "Get Transaction",
       method: "GET",
       path: "/transactions/:id",
-      description: "Retrieve details and status of a specific transaction"
+      description: "Retrieve details and status of a specific transaction",
     },
     {
       name: "Get All Transactions",
       method: "GET",
       path: "/transactions",
-      description: "List all transactions with optional filtering and pagination"
-    }
+      description:
+        "List all transactions with optional filtering and pagination",
+    },
   ],
   wallets: [
     {
       name: "Get Wallet Balance",
       method: "GET",
       path: "/wallets/balance",
-      description: "Get current wallet balance across supported currencies"
+      description: "Get current wallet balance across supported currencies",
     },
     {
       name: "Create Wallet",
       method: "POST",
       path: "/wallets",
-      description: "Create a new wallet for handling transactions"
-    }
-  ]
+      description: "Create a new wallet for handling transactions",
+    },
+  ],
 };
 
 const codeExamples = [
@@ -51,7 +52,7 @@ const codeExamples = [
     code: `
 const API_URL = 'https://espeespay-backend.onrender.com';
 
-// Create an escrow transaction
+// Create an Paylinc transaction
 const createTransaction = async (token) => {
   const response = await fetch(\`\${API_URL}/transactions\`, {
     method: 'POST',
@@ -116,7 +117,7 @@ def get_wallet_balance(token):
     )
     return response.json()
 `,
-  }
+  },
 ];
 
 const ApiDocsPage: React.FC = () => {
@@ -126,7 +127,7 @@ const ApiDocsPage: React.FC = () => {
   useEffect(() => {
     // Replace this with your actual auth check logic
     const isAuthenticated = localStorage.getItem("token"); // or your auth method
-    
+
     if (!isAuthenticated) {
       router.push("/signin"); // or your sign-in route
     }
@@ -134,7 +135,7 @@ const ApiDocsPage: React.FC = () => {
 
   // Prevent flash of content by returning null while checking auth
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       // Replace with your actual auth check
@@ -145,7 +146,7 @@ const ApiDocsPage: React.FC = () => {
         setIsLoading(false);
       }
     };
-    
+
     checkAuth();
   }, [router]);
 
@@ -163,8 +164,8 @@ const ApiDocsPage: React.FC = () => {
               API Documentation
             </h2>
             <p className="mt-4 text-xl text-gray-400">
-              Integrate Escrow PayLinQ's secure payment and trading features
-              into your application.
+              Integrate Paylinc's secure payment and trading features into your
+              application.
             </p>
 
             {/* Authentication Section */}
@@ -241,14 +242,13 @@ const ApiDocsPage: React.FC = () => {
 
             {/* Full Documentation Link */}
             <div className="mt-12">
-              <Link href="https://escro.readme.io/reference/">
-                <Button
-                  size="lg"
-                  className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
-                >
-                  View Full API Reference
-                </Button>
-              </Link>
+              <Button
+                disabled
+                size="lg"
+                className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
+              >
+                View Full API Reference
+              </Button>
             </div>
           </div>
         </div>

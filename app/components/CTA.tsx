@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -7,9 +7,11 @@ const CTA: React.FC = () => {
   return (
     <section className="py-24 bg-blue-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
+        <div
+          className="text-center"
+        >
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            Ready to secure your transactions with Escrow PayLink?
+            Ready to secure your transactions with Paylinc?
           </h2>
           <p className="mt-4 text-xl text-blue-100 md:w-[800px] justify-center text-center mx-auto">
             Create custom payment links, manage multiple currencies, and trade with confidence
@@ -19,7 +21,9 @@ const CTA: React.FC = () => {
             Perfect for businesses, freelancers, and digital product sellers worldwide.
           </p>
         </div>
-        <div className="mt-12">
+        <div
+          className="mt-12"
+        >
           <form className="sm:flex justify-center">
             <Input
               type="email"

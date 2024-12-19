@@ -469,7 +469,7 @@ const TransactionHistory: React.FC<{ transactions: CustomerTransaction[] }> = ({
   );
 };
 
-const EscrowInformation: React.FC<{
+const PaylincInformation: React.FC<{
   escrowDetails: {
     timeoutPeriod: number;
     autoReleaseEnabled: boolean;
@@ -478,7 +478,7 @@ const EscrowInformation: React.FC<{
 }> = ({ escrowDetails }) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Escrow Details</h3>
+      <h3 className="text-lg font-medium">Paylinc Details</h3>
       <div className="p-4 border rounded-lg">
         <div className="space-y-2">
           <div className="flex justify-between">
@@ -1170,7 +1170,7 @@ const PaymentPageContent: React.FC = () => {
                   Pay with {selectedPaymentMethod}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  Protected by Escrow
+                  Protected by Paylinc
                   {paymentLink?.paymentLink?.metadata?.escrowConditions
                     ?.timeoutPeriod &&
                     ` • ${paymentLink.paymentLink.metadata.escrowConditions.timeoutPeriod}h Resolution Time`}
@@ -1186,7 +1186,7 @@ const PaymentPageContent: React.FC = () => {
               )}
 
               {escrowDetails && (
-                <EscrowInformation
+                <PaylincInformation
                   escrowDetails={{
                     ...paymentLink?.paymentLink?.metadata?.escrowConditions,
                     ...escrowDetails,

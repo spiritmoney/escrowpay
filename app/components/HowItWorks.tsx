@@ -1,15 +1,15 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Wallet, ShieldCheck, BarChart } from "lucide-react";
 
 const steps = [
   {
     title: "Create an Account",
-    description: "Sign up for Escrow PayLink in minutes. Verify your identity and access multiple currency options - both crypto and fiat.",
+    description: "Sign up for Paylinc in minutes. Verify your identity and access multiple currency options - both crypto and fiat.",
     icon: Wallet,
   },
   {
-    title: "Set Up Escrow",
+    title: "Set Up a Pay link",
     description:
       "Create secure, customizable payment links for your goods, services, or digital products. Define terms, set conditions, and share with buyers.",
     icon: ShieldCheck,
@@ -26,9 +26,11 @@ const HowItWorks: React.FC = () => {
   return (
     <section className="py-24 bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
+        <div
+          className="text-center"
+        >
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            How Escrow PayLink Works
+            How Paylinc Works
           </h2>
           <p className="mt-4 text-xl text-gray-400">
             A blockchain-powered payment solution that simplifies secure transactions
@@ -36,7 +38,7 @@ const HowItWorks: React.FC = () => {
           
           <div className="mt-6 max-w-3xl mx-auto">
             <p className="text-gray-400 leading-relaxed">
-              Escrow PayLink combines P2P trading flexibility with customizable payment links,
+              Paylinc combines P2P trading flexibility with customizable payment links,
               enabling seamless transactions for goods, services, and digital products.
               With support for multiple currencies, our platform ensures your funds are
               secure until all parties are satisfied.
@@ -60,11 +62,11 @@ const HowItWorks: React.FC = () => {
         </div>
 
         <div className="mt-20">
-          <div className="relative">
+          <div className="">
             {steps.map((step, index) => (
               <div
-                key={index}
-                className="relative z-10 flex mb-12"
+                key={step.title}
+                className="relative p-6 rounded-lg"
               >
                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mr-4">
                   <step.icon className="w-6 h-6 text-white" />

@@ -66,9 +66,8 @@ const FeaturesPage: React.FC = () => {
                 Everything you need for Secure payments
               </p>
               <p className="mt-4 max-w-2xl text-xl text-gray-400 lg:mx-auto">
-                Escrow PayLink combines P2P trading flexibility with customizable payment links, 
-                enabling secure transactions for goods, services, and digital products. Our 
-                smart contract escrow system supports both crypto and fiat currencies, 
+                Paylinc combines P2P trading flexibility with customizable payment links, 
+                enabling secure transactions for goods, services, and digital products. Our escrow system supports both crypto and fiat currencies, 
                 ensuring trust and peace of mind for businesses and individuals worldwide.
               </p>
             </div>

@@ -14,7 +14,7 @@ const PrivacyPage: React.FC = () => {
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-white">Introduction</h2>
               <p>
-                At Escrow PayLinQ, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.
+                At Paylinc, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.
               </p>
             </section>
 
@@ -60,7 +60,7 @@ const PrivacyPage: React.FC = () => {
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-white">Contact Us</h2>
               <p>
-                If you have any questions about this Privacy Policy, please contact us at escrowforespees@gmail.com
+                If you have any questions about this Privacy Policy, please contact us at paylinc@gmail.com
               </p>
             </section>
           </div>

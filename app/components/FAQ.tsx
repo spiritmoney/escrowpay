@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import {
   Accordion,
   AccordionContent,
@@ -9,29 +8,29 @@ import {
 
 const faqs = [
   {
-    question: "What is Escrow PayLink?",
+    question: "What is Paylinc?",
     answer:
-      "Escrow PayLink is a blockchain-powered payment solution that combines P2P trading with customizable payment links. It's designed to facilitate secure transactions for businesses and individuals, whether you're selling goods, services, or digital products.",
+      "Paylinc is a blockchain-powered payment solution that combines P2P trading with customizable payment links. It's designed to facilitate secure transactions for businesses and individuals, whether you're selling goods, services, or digital products.",
   },
   {
-    question: "How does Escrow PayLink ensure transaction security?",
+    question: "How does Paylinc ensure transaction security?",
     answer:
-      "Escrow PayLink uses smart contracts to hold funds securely until all transaction conditions are met. This escrow mechanism ensures that both parties are protected throughout the transaction, reducing fraud and building trust between users.",
+      "Paylinc uses smart contracts to hold funds securely until all transaction conditions are met. This escrow mechanism ensures that both parties are protected throughout the transaction, reducing fraud and building trust between users.",
   },
   {
-    question: "What payment methods does Escrow PayLink support?",
+    question: "What payment methods does Paylinc support?",
     answer:
-      "Escrow PayLink supports both cryptocurrency and fiat currency transactions, providing flexibility for users worldwide. This multi-currency support allows for seamless international transactions.",
+      "Paylinc supports both cryptocurrency and fiat currency transactions, providing flexibility for users worldwide. This multi-currency support allows for seamless international transactions.",
   },
   {
-    question: "How can I use Escrow PayLink for my business?",
+    question: "How can I use Paylinc for my business?",
     answer:
-      "Escrow PayLink is ideal for businesses, freelancers, and digital product sellers. You can create customized payment links, manage multiple transactions, and ensure secure payments for your goods or services through our escrow smart contracts.",
+      "Paylinc is ideal for businesses, freelancers, and digital product sellers. You can create customized payment links, manage multiple transactions, and ensure secure payments for your goods or services through our escrow smart contracts.",
   },
   {
     question: "Are there any transaction fees?",
     answer:
-      "Escrow PayLink charges a competitive fee for each transaction to cover smart contract operations and platform maintenance. The exact fee structure varies based on the transaction type and volume. Please visit our pricing page for detailed information.",
+      "Paylinc charges a competitive fee for each transaction to cover smart contract operations and platform maintenance. The exact fee structure varies based on the transaction type and volume. Please visit our pricing page for detailed information.",
   },
 ];
 

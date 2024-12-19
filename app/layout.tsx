@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/app/providers/ThemeProvider";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Escrow PayLinQ",
+  title: "Paylinc",
   description: "A Secure Multi-Currency Payment and Escrow Platform",
 };
 

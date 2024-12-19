@@ -14,7 +14,7 @@ const TermsPage: React.FC = () => {
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-white">Agreement to Terms</h2>
               <p>
-                By accessing or using Escrow PayLinQ's services, you agree to be bound by these Terms of Service and all applicable laws and regulations.
+                By accessing or using Paylinc's services, you agree to be bound by these Terms of Service and all applicable laws and regulations.
               </p>
             </section>
 
@@ -33,7 +33,7 @@ const TermsPage: React.FC = () => {
               <ul className="list-disc pl-6 space-y-2">
                 <li>Transaction fees and charges</li>
                 <li>Payment processing terms</li>
-                <li>Escrow service conditions</li>
+                <li>Paylinc service conditions</li>
                 <li>Dispute resolution process</li>
               </ul>
             </section>
@@ -55,7 +55,7 @@ const TermsPage: React.FC = () => {
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-white">Contact</h2>
               <p>
-                For any questions regarding these Terms of Service, please contact us at escrowforespees@gmail.com
+                For any questions regarding these Terms of Service, please contact us at paylinc@gmail.com
               </p>
             </section>
           </div>

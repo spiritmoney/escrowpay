@@ -8,11 +8,11 @@ import {
   LockKeyhole,
   BarChartIcon as ChartBar,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const features = [
   {
-    name: "Escrow-Based Payments",
+    name: "Paylinc-Based Payments",
     description:
       "Secure fund holding through smart contracts for both fiat and cryptocurrency, with flexible refund mechanisms and dispute resolution.",
     icon: Shield,
@@ -58,10 +58,10 @@ const Features: React.FC = () => {
             Features
           </div>
           <div className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
-            Why Choose Escrow?
+            Why Choose Paylinc?
           </div>
           <div className="mt-4 max-w-2xl text-xl text-gray-400 lg:mx-auto">
-            Escrow prioritizes security, transparency, and usability, making
+            Paylinc prioritizes security, transparency, and usability, making
             it a trusted choice for cryptocurrency transactions worldwide.
           </div>
         </div>

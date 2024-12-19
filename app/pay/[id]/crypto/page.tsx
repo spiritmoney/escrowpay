@@ -108,7 +108,7 @@ const CryptoPaymentPage = () => {
 
             <div className="rounded-lg bg-blue-50 p-4 border border-blue-200">
               <p className="text-sm text-blue-700">
-                Please send exactly {cryptoAmount} {token} to the address above. 
+                Please send exactly {cryptoAmount} {token} to the Paylinc address above. 
                 The transaction will be confirmed after {requiredConfirmations} network confirmations.
               </p>
             </div>
