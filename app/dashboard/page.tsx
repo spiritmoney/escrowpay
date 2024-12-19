@@ -259,7 +259,10 @@ const DashboardPage: React.FC = () => {
               ) : (
                 <>
                   <div className="text-2xl font-bold">
-                    ${stats?.totalBalance.amount.toFixed(2)}
+                    ${stats?.totalBalance.amount.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}
                   </div>
                   <p className="text-xs text-gray-500">
                     {stats?.totalBalance.change.toFixed(1)}% from last month
@@ -371,7 +374,7 @@ const DashboardPage: React.FC = () => {
                       </div>
                       <div
                         className={`font-medium ${
-                          activity.amount?.includes("-")
+                          typeof activity.amount === 'string' && activity.amount.startsWith('-')
                             ? "text-red-600"
                             : "text-green-600"
                         }`}

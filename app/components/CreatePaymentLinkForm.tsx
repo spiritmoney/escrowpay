@@ -26,8 +26,61 @@ import {
   TransactionType,
   VerificationMethod,
   CreatePaymentLinkDto,
+  PaymentMethodType,
 } from "../dashboard/payment-link/api";
 import { Upload } from "lucide-react";
+
+const TOKENS = {
+  "BTC-NETWORK": {
+    symbol: "BTC",
+    name: "Bitcoin",
+    chainId: 1,
+    address: "0x0000000000000000000000000000000000000000",
+    network: "Bitcoin Network",
+  },
+  "ETH-MAINNET": {
+    symbol: "ETH",
+    name: "Ethereum",
+    chainId: 1,
+    address: "0x0000000000000000000000000000000000000000",
+    network: "Ethereum Mainnet",
+  },
+  "USDT-MAINNET": {
+    symbol: "USDT",
+    name: "Tether USD",
+    chainId: 1,
+    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    network: "Ethereum Mainnet",
+  },
+  "USDC-MAINNET": {
+    symbol: "USDC",
+    name: "USD Coin",
+    chainId: 1,
+    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    network: "Ethereum Mainnet",
+  },
+  "BNB-BSC": {
+    symbol: "BNB",
+    name: "BNB",
+    chainId: 56,
+    address: "0x0000000000000000000000000000000000000000",
+    network: "BNB Smart Chain",
+  },
+  "USDT-BSC": {
+    symbol: "USDT",
+    name: "Tether USD",
+    chainId: 56,
+    address: "0x55d398326f99059fF775485246999027B3197955",
+    network: "BNB Smart Chain",
+  },
+  "USDC-BSC": {
+    symbol: "USDC",
+    name: "USD Coin",
+    chainId: 56,
+    address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    network: "BNB Smart Chain",
+  },
+} as const;
 
 interface CreatePaymentLinkFormProps {
   onClose: () => void;
@@ -37,6 +90,7 @@ interface DealStage {
   name: string;
   paymentPercentage: number;
   requirements: string[];
+  description: string;
   timelineInDays: number;
   requiredDocuments: string[];
 }
@@ -48,10 +102,15 @@ interface FormState {
   description: string;
   type: PaymentLinkType;
   transactionType: TransactionType;
-  servicesDetails: {
+  serviceDetails: {
     description: string;
+    deliveryTimeline: string;
     terms: {
-      paymentTerms: string;
+      contractTerms: string;
+      paymentSchedule: string;
+      cancellationTerms: string;
+      disputeResolution: string;
+      additionalClauses: string[];
     };
   };
   serviceProof: {
@@ -79,74 +138,25 @@ interface FormState {
     description: string;
     timeline: string;
     stages: DealStage[];
-    requiredDocuments: string[];
-    terms: {
-      contractTerms: string;
-      paymentSchedule: string;
-      cancellationTerms: string;
-      disputeResolution: string;
-      additionalClauses: string[];
+    requireAllPartyApproval: boolean;
+    stageTransitionDelay: number;
+    customStageRules?: {
+      allowPartialPayments: boolean;
+      requireDocumentVerification: boolean;
     };
   };
+  escrowConditions?: {
+    timeoutPeriod: number;
+    autoReleaseHours: number;
+  };
 }
-
-const TOKENS = {
-  "BTC-NETWORK": {
-    symbol: "BTC",
-    name: "Bitcoin",
-    chainId: 1,
-    address: "0x0000000000000000000000000000000000000000", // Native BTC
-    network: "Bitcoin Network",
-  },
-  "ETH-MAINNET": {
-    symbol: "ETH",
-    name: "Ethereum",
-    chainId: 1,
-    address: "0x0000000000000000000000000000000000000000", // Native ETH
-    network: "Ethereum Mainnet",
-  },
-  "USDT-MAINNET": {
-    symbol: "USDT",
-    name: "Tether USD",
-    chainId: 1,
-    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    network: "Ethereum Mainnet",
-  },
-  "USDC-MAINNET": {
-    symbol: "USDC",
-    name: "USD Coin",
-    chainId: 1,
-    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    network: "Ethereum Mainnet",
-  },
-  "BNB-BSC": {
-    symbol: "BNB",
-    name: "BNB",
-    chainId: 56,
-    address: "0x0000000000000000000000000000000000000000", // Native BNB
-    network: "BNB Smart Chain",
-  },
-  "USDT-BSC": {
-    symbol: "USDT",
-    name: "Tether USD",
-    chainId: 56,
-    address: "0x55d398326f99059fF775485246999027B3197955",
-    network: "BNB Smart Chain",
-  },
-  "USDC-BSC": {
-    symbol: "USDC",
-    name: "USD Coin",
-    chainId: 56,
-    address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
-    network: "BNB Smart Chain",
-  },
-};
 
 const DEFAULT_DEAL_STAGES: DealStage[] = [
   {
     name: "Initial Stage",
     paymentPercentage: 25,
     requirements: ["Enter requirement 1", "Enter requirement 2"],
+    description: "Initial stage of the deal",
     timelineInDays: 30,
     requiredDocuments: ["Document 1", "Document 2"],
   },
@@ -154,16 +164,45 @@ const DEFAULT_DEAL_STAGES: DealStage[] = [
     name: "Second Stage",
     paymentPercentage: 25,
     requirements: ["Enter requirement 1", "Enter requirement 2"],
+    description: "Second stage of the deal",
     timelineInDays: 30,
     requiredDocuments: ["Document 1", "Document 2"],
   },
 ];
+
+const DEAL_TIMELINES = [
+  { value: "IMMEDIATE", label: "Immediate" },
+  { value: "5_DAYS", label: "5 Days" },
+  { value: "7_DAYS", label: "7 Days" },
+  { value: "14_DAYS", label: "14 Days" },
+  { value: "30_DAYS", label: "30 Days" },
+  { value: "60_DAYS", label: "60 Days" },
+  { value: "90_DAYS", label: "90 Days" },
+  { value: "120_DAYS", label: "120 Days" },
+  { value: "180_DAYS", label: "180 Days" },
+  { value: "365_DAYS", label: "1 Year" },
+] as const;
 
 const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
   onClose,
 }) => {
   const queryClient = useQueryClient();
   const createPaymentLink = useCreatePaymentLink();
+
+  const initialCryptoDetails = {
+    network: "Ethereum Mainnet",
+    tokenSymbol: "USDT",
+    tokenAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    chainId: 1,
+    decimals: undefined,
+    requiredConfirmations: undefined,
+    acceptedTokens: ["USDT"],
+    networkOptions: [{
+      chainId: 1,
+      name: "Ethereum Mainnet",
+      requiredConfirmations: 12
+    }]
+  };
 
   const [formData, setFormData] = useState<FormState>({
     name: "",
@@ -172,40 +211,9 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
     description: "",
     type: PaymentLinkType.SELLING,
     transactionType: TransactionType.CRYPTOCURRENCY,
-    servicesDetails: {
+    serviceDetails: {
       description: "",
-      terms: {
-        paymentTerms: "Full payment upfront",
-      },
-    },
-    serviceProof: {
-      description: "",
-      proofFiles: [],
-      completionDate: "",
-    },
-    cryptocurrencyDetails: {
-      network: "ETHEREUM",
-      tokenSymbol: "ETH",
-      tokenAddress: "",
-      chainId: undefined,
-      decimals: undefined,
-      requiredConfirmations: undefined,
-      acceptedTokens: ["ETH", "USDT", "USDC"],
-      networkOptions: [
-        {
-          chainId: 1,
-          name: "ETHEREUM",
-          requiredConfirmations: 12
-        }
-      ]
-    },
-    dealDetails: {
-      dealType: "STANDARD",
-      title: "",
-      description: "",
-      timeline: "30 days",
-      stages: DEFAULT_DEAL_STAGES,
-      requiredDocuments: [],
+      deliveryTimeline: "",
       terms: {
         contractTerms: "",
         paymentSchedule: "",
@@ -214,6 +222,29 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
         additionalClauses: [],
       },
     },
+    serviceProof: {
+      description: "",
+      proofFiles: [],
+      completionDate: "",
+    },
+    cryptocurrencyDetails: initialCryptoDetails,
+    dealDetails: {
+      dealType: "",
+      title: "",
+      description: "",
+      timeline: "",
+      stages: [],
+      requireAllPartyApproval: true,
+      stageTransitionDelay: 24,
+      customStageRules: {
+        allowPartialPayments: false,
+        requireDocumentVerification: true
+      }
+    },
+    escrowConditions: {
+      timeoutPeriod: 72,
+      autoReleaseHours: 48
+    }
   });
 
   const handleTransactionTypeChange = (value: TransactionType) => {
@@ -225,9 +256,12 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
 
   const handleTokenChange = (value: string) => {
     const token = TOKENS[value as keyof typeof TOKENS];
-    console.log("Selected token:", token);
+    if (!token) {
+      console.error("Invalid token selected:", value);
+      return;
+    }
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       cryptocurrencyDetails: {
         ...prev.cryptocurrencyDetails,
@@ -336,13 +370,13 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
             <div className="grid gap-2">
               <Label>Service Description</Label>
               <Textarea
-                placeholder="Describe your service..."
-                value={formData.servicesDetails.description}
+                placeholder="Describe your service in detail..."
+                value={formData.serviceDetails.description}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    servicesDetails: {
-                      ...prev.servicesDetails,
+                    serviceDetails: {
+                      ...prev.serviceDetails,
                       description: e.target.value,
                     },
                   }))
@@ -352,43 +386,128 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
             </div>
 
             <div className="grid gap-2">
-              <Label>Payment Terms</Label>
-              <Select
-                value={formData.servicesDetails.terms.paymentTerms}
-                onValueChange={(value) =>
+              <Label>Delivery Timeline</Label>
+              <Input
+                placeholder="e.g., 2 weeks"
+                value={formData.serviceDetails.deliveryTimeline}
+                onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    servicesDetails: {
-                      ...prev.servicesDetails,
-                      terms: {
-                        ...prev.servicesDetails.terms,
-                        paymentTerms: value,
-                      },
+                    serviceDetails: {
+                      ...prev.serviceDetails,
+                      deliveryTimeline: e.target.value,
                     },
                   }))
                 }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select payment terms" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Full payment upfront">
-                    Full payment upfront
-                  </SelectItem>
-                  <SelectItem value="50% upfront, 50% on completion">
-                    50% upfront, 50% on completion
-                  </SelectItem>
-                  <SelectItem value="Payment on completion">
-                    Payment on completion
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+                required
+              />
+            </div>
+
+            <div className="space-y-4">
+              <Label>Service Terms</Label>
+
+              <div className="grid gap-2">
+                <Label className="text-sm">Contract Terms</Label>
+                <Textarea
+                  placeholder="Enter the standard contract terms..."
+                  value={formData.serviceDetails.terms.contractTerms}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      serviceDetails: {
+                        ...prev.serviceDetails,
+                        terms: {
+                          ...prev.serviceDetails.terms,
+                          contractTerms: e.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  required
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label className="text-sm">Payment Schedule</Label>
+                <Select
+                  value={formData.serviceDetails.terms.paymentSchedule}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      serviceDetails: {
+                        ...prev.serviceDetails,
+                        terms: {
+                          ...prev.serviceDetails.terms,
+                          paymentSchedule: value,
+                        },
+                      },
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select payment schedule" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Payment upon completion">
+                      Payment upon completion
+                    </SelectItem>
+                    <SelectItem value="50% upfront, 50% upon completion">
+                      50% upfront, 50% upon completion
+                    </SelectItem>
+                    <SelectItem value="Full payment upfront">
+                      Full payment upfront
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <Label className="text-sm">Cancellation Terms</Label>
+                <Textarea
+                  placeholder="Enter cancellation policy..."
+                  value={formData.serviceDetails.terms.cancellationTerms}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      serviceDetails: {
+                        ...prev.serviceDetails,
+                        terms: {
+                          ...prev.serviceDetails.terms,
+                          cancellationTerms: e.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  required
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label className="text-sm">Dispute Resolution</Label>
+                <Textarea
+                  placeholder="Enter dispute resolution process..."
+                  value={formData.serviceDetails.terms.disputeResolution}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      serviceDetails: {
+                        ...prev.serviceDetails,
+                        terms: {
+                          ...prev.serviceDetails.terms,
+                          disputeResolution: e.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  required
+                />
+              </div>
             </div>
 
             <div className="grid gap-2">
               <Label>Service Proof Requirements</Label>
               <Textarea
-                placeholder="Describe the proof required for service completion..."
+                placeholder="Describe what proof will be required upon service completion..."
                 value={formData.serviceProof.description}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -420,79 +539,6 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
                 required
               />
             </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="proofFiles">Required Proof Files</Label>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() =>
-                      document.getElementById("proofFiles")?.click()
-                    }
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload Files
-                  </Button>
-                  <Input
-                    id="proofFiles"
-                    type="file"
-                    multiple
-                    className="hidden"
-                    accept="image/*,.pdf,.doc,.docx"
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []);
-                      setFormData((prev) => ({
-                        ...prev,
-                        serviceProof: {
-                          ...prev.serviceProof,
-                          proofFiles: [
-                            ...prev.serviceProof.proofFiles,
-                            ...files.map((file) => file.name),
-                          ],
-                        },
-                      }));
-                    }}
-                  />
-                </div>
-                {formData.serviceProof.proofFiles.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {formData.serviceProof.proofFiles.map((file, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 bg-secondary p-2 rounded-md"
-                      >
-                        <span className="text-sm">{file}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-auto p-1"
-                          onClick={() => {
-                            setFormData((prev) => ({
-                              ...prev,
-                              serviceProof: {
-                                ...prev.serviceProof,
-                                proofFiles: prev.serviceProof.proofFiles.filter(
-                                  (_, i) => i !== index
-                                ),
-                              },
-                            }));
-                          }}
-                        >
-                          ×
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Accepted file types: Images, PDF, DOC, DOCX
-                </p>
-              </div>
-            </div>
           </div>
         );
 
@@ -509,35 +555,38 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
       <div className="grid gap-2">
         <Label>Deal Type</Label>
         <Input
-          value={formData.dealDetails?.dealType}
+          value={formData.dealDetails.dealType}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
               dealDetails: {
-                ...prev.dealDetails!,
+                ...prev.dealDetails,
                 dealType: e.target.value,
               },
             }))
           }
-          placeholder="e.g., Business Acquisition, Real Estate, Joint Venture"
+          placeholder="e.g., REAL ESTATE, BUSINESS ACQUISITION, etc."
           required
         />
+        <p className="text-xs text-muted-foreground">
+          Enter the type of deal you're creating
+        </p>
       </div>
 
       <div className="grid gap-2">
         <Label>Deal Title</Label>
         <Input
-          value={formData.dealDetails?.title}
+          value={formData.dealDetails.title}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
               dealDetails: {
-                ...prev.dealDetails!,
+                ...prev.dealDetails,
                 title: e.target.value,
               },
             }))
           }
-          placeholder="Enter deal title"
+          placeholder="e.g., Property Purchase Agreement"
           required
         />
       </div>
@@ -545,37 +594,49 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
       <div className="grid gap-2">
         <Label>Description</Label>
         <Textarea
-          value={formData.dealDetails?.description}
+          value={formData.dealDetails.description}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
               dealDetails: {
-                ...prev.dealDetails!,
+                ...prev.dealDetails,
                 description: e.target.value,
               },
             }))
           }
-          placeholder="Describe the deal details"
+          placeholder="e.g., Purchase of commercial property at 123 Business Ave"
           required
         />
       </div>
 
       <div className="grid gap-2">
         <Label>Timeline</Label>
-        <Input
-          value={formData.dealDetails?.timeline}
-          onChange={(e) =>
+        <Select
+          value={formData.dealDetails.timeline}
+          onValueChange={(value) =>
             setFormData((prev) => ({
               ...prev,
               dealDetails: {
-                ...prev.dealDetails!,
-                timeline: e.target.value,
+                ...prev.dealDetails,
+                timeline: value,
               },
             }))
           }
-          placeholder="Expected timeline for deal completion"
-          required
-        />
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select deal timeline" />
+          </SelectTrigger>
+          <SelectContent>
+            {DEAL_TIMELINES.map((timeline) => (
+              <SelectItem key={timeline.value} value={timeline.value}>
+                {timeline.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          Maximum duration for completing all deal stages
+        </p>
       </div>
 
       <div className="grid gap-2">
@@ -589,14 +650,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
               setFormData((prev) => ({
                 ...prev,
                 dealDetails: {
-                  ...prev.dealDetails!,
+                  ...prev.dealDetails,
                   stages: [
-                    ...prev.dealDetails!.stages,
+                    ...prev.dealDetails.stages,
                     {
-                      name: `Stage ${prev.dealDetails!.stages.length + 1}`,
+                      name: "",
                       paymentPercentage: 0,
-                      requirements: ["Enter requirement"],
-                      timelineInDays: 30,
+                      requirements: [],
+                      description: "",
+                      timelineInDays: 0,
                       requiredDocuments: [],
                     },
                   ],
@@ -607,183 +669,237 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
             Add Stage
           </Button>
         </div>
+
         <div className="space-y-4">
-          {formData.dealDetails?.stages.map((stage, index) => (
+          {formData.dealDetails.stages.map((stage, index) => (
             <Card key={index} className="p-4">
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <Label>Stage {index + 1}</Label>
-                  {index > 0 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-auto p-1 text-red-500 hover:text-red-700"
-                      onClick={() => {
-                        const newStages = formData.dealDetails!.stages.filter(
-                          (_, i) => i !== index
-                        );
-                        setFormData((prev) => ({
-                          ...prev,
-                          dealDetails: {
-                            ...prev.dealDetails!,
-                            stages: newStages,
-                          },
-                        }));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  )}
-                </div>
-                <Input
-                  value={stage.name}
-                  onChange={(e) => {
-                    const newStages = [...formData.dealDetails!.stages];
-                    newStages[index] = { ...stage, name: e.target.value };
-                    setFormData((prev) => ({
-                      ...prev,
-                      dealDetails: {
-                        ...prev.dealDetails!,
-                        stages: newStages,
-                      },
-                    }));
-                  }}
-                  placeholder="Enter stage name"
-                />
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    value={stage.paymentPercentage}
-                    onChange={(e) => {
-                      const newStages = [...formData.dealDetails!.stages];
-                      newStages[index] = {
-                        ...stage,
-                        paymentPercentage: Number(e.target.value),
-                      };
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => {
+                      const newStages = formData.dealDetails.stages.filter(
+                        (_, i) => i !== index
+                      );
                       setFormData((prev) => ({
                         ...prev,
                         dealDetails: {
-                          ...prev.dealDetails!,
+                          ...prev.dealDetails,
                           stages: newStages,
                         },
                       }));
                     }}
-                    placeholder="Enter payment percentage"
-                    min="0"
-                    max="100"
-                  />
-                  <span className="text-sm text-muted-foreground">%</span>
+                  >
+                    Remove
+                  </Button>
                 </div>
-                <Textarea
-                  value={stage.requirements.join("\n")}
-                  onChange={(e) => {
-                    const newStages = [...formData.dealDetails!.stages];
-                    newStages[index] = {
-                      ...stage,
-                      requirements: e.target.value
-                        .split("\n")
-                        .filter((r) => r.trim()),
-                    };
-                    setFormData((prev) => ({
-                      ...prev,
-                      dealDetails: {
-                        ...prev.dealDetails!,
-                        stages: newStages,
-                      },
-                    }));
-                  }}
-                  placeholder="Enter requirements (one per line)"
-                  className="min-h-[100px]"
-                />
+
+                <div className="grid gap-2">
+                  <Label className="text-sm">Stage Name</Label>
+                  <Input
+                    value={stage.name}
+                    onChange={(e) => {
+                      const newStages = [...formData.dealDetails.stages];
+                      newStages[index] = { ...stage, name: e.target.value };
+                      setFormData((prev) => ({
+                        ...prev,
+                        dealDetails: {
+                          ...prev.dealDetails,
+                          stages: newStages,
+                        },
+                      }));
+                    }}
+                    placeholder="e.g., Initial Deposit"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="text-sm">Description</Label>
+                  <Textarea
+                    value={stage.description}
+                    onChange={(e) => {
+                      const newStages = [...formData.dealDetails.stages];
+                      newStages[index] = { ...stage, description: e.target.value };
+                      setFormData((prev) => ({
+                        ...prev,
+                        dealDetails: {
+                          ...prev.dealDetails,
+                          stages: newStages,
+                        },
+                      }));
+                    }}
+                    placeholder="e.g., Initial deposit to secure the deal"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label className="text-sm">Payment Percentage</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={stage.paymentPercentage}
+                        onChange={(e) => {
+                          const newStages = [...formData.dealDetails.stages];
+                          newStages[index] = {
+                            ...stage,
+                            paymentPercentage: Number(e.target.value),
+                          };
+                          setFormData((prev) => ({
+                            ...prev,
+                            dealDetails: {
+                              ...prev.dealDetails,
+                              stages: newStages,
+                            },
+                          }));
+                        }}
+                        min="0"
+                        max="100"
+                      />
+                      <span className="text-sm text-muted-foreground">%</span>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label className="text-sm">Timeline (Days)</Label>
+                    <Input
+                      type="number"
+                      value={stage.timelineInDays}
+                      onChange={(e) => {
+                        const newStages = [...formData.dealDetails.stages];
+                        newStages[index] = {
+                          ...stage,
+                          timelineInDays: Number(e.target.value),
+                        };
+                        setFormData((prev) => ({
+                          ...prev,
+                          dealDetails: {
+                            ...prev.dealDetails,
+                            stages: newStages,
+                          },
+                        }));
+                      }}
+                      min="1"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="text-sm">Requirements</Label>
+                  <Textarea
+                    value={stage.requirements.join("\n")}
+                    onChange={(e) => {
+                      const newStages = [...formData.dealDetails.stages];
+                      newStages[index] = {
+                        ...stage,
+                        requirements: e.target.value.split("\n").filter(r => r.trim()),
+                      };
+                      setFormData((prev) => ({
+                        ...prev,
+                        dealDetails: {
+                          ...prev.dealDetails,
+                          stages: newStages,
+                        },
+                      }));
+                    }}
+                    placeholder="Enter requirements (one per line)&#10;e.g., Signed LOI&#10;Proof of Funds"
+                    className="min-h-[100px]"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="text-sm">Required Documents</Label>
+                  <div className="space-y-2">
+                    {stage.requiredDocuments.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {stage.requiredDocuments.map((doc, docIndex) => (
+                          <div
+                            key={docIndex}
+                            className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-md"
+                          >
+                            <span className="text-sm">{doc}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-auto p-1 hover:bg-destructive/20"
+                              onClick={() => {
+                                const newStages = [...formData.dealDetails.stages];
+                                newStages[index] = {
+                                  ...stage,
+                                  requiredDocuments: stage.requiredDocuments.filter(
+                                    (_, i) => i !== docIndex
+                                  ),
+                                };
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  dealDetails: {
+                                    ...prev.dealDetails,
+                                    stages: newStages,
+                                  },
+                                }));
+                              }}
+                            >
+                              ×
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="file"
+                        multiple
+                        accept=".pdf,.doc,.docx,.txt"
+                        className="flex-1"
+                        onChange={(e) => handleFileSelection(index, e.target.files)}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="shrink-0"
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.multiple = true;
+                          input.accept = '.pdf,.doc,.docx,.txt';
+                          input.onchange = (e) => {
+                            const target = e.target as HTMLInputElement;
+                            handleFileSelection(index, target.files);
+                          };
+                          input.click();
+                        }}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Supported formats: PDF, DOC, DOCX, TXT
+                    </p>
+                  </div>
+                </div>
               </div>
             </Card>
           ))}
         </div>
-        {formData.dealDetails?.stages &&
-          formData.dealDetails.stages.length > 0 && (
-            <div className="text-sm text-muted-foreground mt-2">
-              Total percentage:{" "}
-              {formData.dealDetails.stages.reduce(
-                (sum, stage) => sum + stage.paymentPercentage,
-                0
-              )}
-              %
-            </div>
-          )}
       </div>
 
-      <div className="grid gap-2">
-        <Label>Deal Terms</Label>
-        <div className="space-y-4">
-          <Textarea
-            value={formData.dealDetails?.terms.contractTerms}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                dealDetails: {
-                  ...prev.dealDetails!,
-                  terms: {
-                    ...prev.dealDetails!.terms,
-                    contractTerms: e.target.value,
-                  },
-                },
-              }))
-            }
-            placeholder="Contract terms"
-            required
-          />
-          <Textarea
-            value={formData.dealDetails?.terms.paymentSchedule}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                dealDetails: {
-                  ...prev.dealDetails!,
-                  terms: {
-                    ...prev.dealDetails!.terms,
-                    paymentSchedule: e.target.value,
-                  },
-                },
-              }))
-            }
-            placeholder="Payment schedule"
-            required
-          />
-          <Textarea
-            value={formData.dealDetails?.terms.cancellationTerms}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                dealDetails: {
-                  ...prev.dealDetails!,
-                  terms: {
-                    ...prev.dealDetails!.terms,
-                    cancellationTerms: e.target.value,
-                  },
-                },
-              }))
-            }
-            placeholder="Cancellation terms"
-            required
-          />
-          <Textarea
-            value={formData.dealDetails?.terms.disputeResolution}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                dealDetails: {
-                  ...prev.dealDetails!,
-                  terms: {
-                    ...prev.dealDetails!.terms,
-                    disputeResolution: e.target.value,
-                  },
-                },
-              }))
-            }
-            placeholder="Dispute resolution process"
-            required
-          />
+      <div className="grid gap-4">
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <span>Total percentage:</span>
+          <span>
+            {formData.dealDetails.stages.reduce(
+              (sum, stage) => sum + stage.paymentPercentage,
+              0
+            )}
+            %
+          </span>
         </div>
       </div>
     </div>
@@ -819,27 +935,27 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
             : VerificationMethod.SELLER_PROOF_SUBMISSION,
         paymentMethods: [
           {
-            methodId: "card_1",
-            type: "CARD",
+            methodId: "card-default",
+            type: PaymentMethodType.CARD,
             isDefault: false,
             details: {
               supportedCards: ["visa", "mastercard"],
             },
           },
           {
-            methodId: "bank_1",
-            type: "BANK_TRANSFER",
+            methodId: "bank-default",
+            type: PaymentMethodType.BANK_TRANSFER,
             isDefault: true,
             details: {
               supportedBanks: ["all"],
             },
           },
           {
-            methodId: "crypto_1",
-            type: "CRYPTOCURRENCY",
+            methodId: "crypto-default",
+            type: PaymentMethodType.CRYPTOCURRENCY,
             isDefault: false,
             details: {
-              supportedTokens: ["BTC", "ETH", "USDT"],
+              supportedNetworks: ["ETHEREUM"],
             },
           },
         ],
@@ -865,34 +981,145 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
               tokenAddress: formData.cryptocurrencyDetails.tokenAddress || "",
               chainId: formData.cryptocurrencyDetails.chainId || 1,
               decimals: formData.cryptocurrencyDetails.decimals,
-              requiredConfirmations: formData.cryptocurrencyDetails.requiredConfirmations,
+              requiredConfirmations:
+                formData.cryptocurrencyDetails.requiredConfirmations,
               acceptedTokens: formData.cryptocurrencyDetails.acceptedTokens,
-              networkOptions: formData.cryptocurrencyDetails.networkOptions
+              networkOptions: formData.cryptocurrencyDetails.networkOptions,
             },
           } as CreatePaymentLinkDto;
           break;
 
         case TransactionType.SERVICES:
-          if (!formData.servicesDetails.description) {
-            toast.error("Please enter service details");
+          // Validate required service details
+          if (!formData.serviceDetails.description) {
+            toast.error("Please enter a service description");
+            return;
+          }
+
+          if (!formData.serviceDetails.deliveryTimeline) {
+            toast.error("Please specify a delivery timeline");
+            return;
+          }
+
+          // Validate service terms
+          if (!formData.serviceDetails.terms.contractTerms) {
+            toast.error("Please enter contract terms");
+            return;
+          }
+
+          if (!formData.serviceDetails.terms.paymentSchedule) {
+            toast.error("Please select a payment schedule");
+            return;
+          }
+
+          if (!formData.serviceDetails.terms.cancellationTerms) {
+            toast.error("Please specify cancellation terms");
+            return;
+          }
+
+          if (!formData.serviceDetails.terms.disputeResolution) {
+            toast.error("Please specify dispute resolution terms");
+            return;
+          }
+
+          // Validate service proof
+          if (!formData.serviceProof.description) {
+            toast.error("Please describe the required proof of service completion");
+            return;
+          }
+
+          if (!formData.serviceProof.completionDate) {
+            toast.error("Please set an expected completion date");
             return;
           }
 
           finalDto = {
             ...baseDto,
-            servicesDetails: {
-              serviceName: formData.name,
-              duration: 0,
-              deliveryMethod: "REMOTE",
-              milestones: [],
+            isAmountNegotiable: false,
+            verificationMethod: VerificationMethod.SELLER_PROOF_SUBMISSION,
+            paymentMethods: [
+              {
+                methodId: "card-default",
+                type: PaymentMethodType.CARD,
+                isDefault: true,
+                details: {
+                  supportedCards: ["visa", "mastercard"]
+                }
+              },
+              {
+                methodId: "bank-default",
+                type: PaymentMethodType.BANK_TRANSFER,
+                isDefault: false,
+                details: {
+                  supportedBanks: ["all"]
+                }
+              },
+              {
+                methodId: "crypto-default",
+                type: PaymentMethodType.CRYPTOCURRENCY,
+                isDefault: false,
+                details: {
+                  supportedNetworks: ["ETHEREUM"]
+                }
+              }
+            ],
+            serviceDetails: {
+              description: formData.serviceDetails.description,
+              deliveryTimeline: formData.serviceDetails.deliveryTimeline,
+              terms: formData.serviceDetails.terms
             },
+            serviceProof: {
+              description: formData.serviceProof.description,
+              proofFiles: formData.serviceProof.proofFiles,
+              completionDate: formData.serviceProof.completionDate
+            }
           } as CreatePaymentLinkDto;
           break;
 
         case TransactionType.DEALS:
+          // Basic validation
+          if (!formData.dealDetails.title.trim()) {
+            toast.error("Please enter a deal title");
+            return;
+          }
+
+          if (!formData.dealDetails.description.trim()) {
+            toast.error("Please enter a deal description");
+            return;
+          }
+
+          if (!formData.dealDetails.dealType.trim()) {
+            toast.error("Please select a deal type");
+            return;
+          }
+
           if (formData.dealDetails.stages.length === 0) {
             toast.error("At least one deal stage is required");
             return;
+          }
+
+          // Validate stages
+          for (const [index, stage] of formData.dealDetails.stages.entries()) {
+            if (!stage.name.trim()) {
+              toast.error(`Stage ${index + 1}: Name is required`);
+              return;
+            }
+            if (!stage.description.trim()) {
+              toast.error(`Stage ${index + 1}: Description is required`);
+              return;
+            }
+            if (stage.paymentPercentage <= 0) {
+              toast.error(`Stage ${index + 1}: Payment percentage must be greater than 0`);
+              return;
+            }
+            if (stage.timelineInDays <= 0) {
+              toast.error(`Stage ${index + 1}: Timeline must be greater than 0 days`);
+              return;
+            }
+            if (stage.requirements.length === 0) {
+              toast.error(`Stage ${index + 1}: At least one requirement is needed`);
+              return;
+            }
           }
 
           const totalPercentage = formData.dealDetails.stages.reduce(
@@ -905,33 +1132,49 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
             return;
           }
 
-          if (
-            !formData.dealDetails.title ||
-            !formData.dealDetails.description
-          ) {
-            toast.error("Please fill in all required deal details");
-            return;
-          }
-
           finalDto = {
             ...baseDto,
+            isAmountNegotiable: true,
+            verificationMethod: VerificationMethod.THIRD_PARTY_ARBITRATION,
+            paymentMethods: [
+              {
+                methodId: "card-default",
+                type: PaymentMethodType.CARD,
+                isDefault: false,
+                details: {
+                  supportedCards: ["visa", "mastercard"]
+                }
+              },
+              {
+                methodId: "bank-default",
+                type: PaymentMethodType.BANK_TRANSFER,
+                isDefault: true,
+                details: {
+                  supportedBanks: ["all"]
+                }
+              },
+              {
+                methodId: "crypto-default",
+                type: PaymentMethodType.CRYPTOCURRENCY,
+                isDefault: false,
+                details: {
+                  supportedNetworks: ["ETHEREUM"]
+                }
+              }
+            ],
             dealDetails: {
-              dealType: formData.dealDetails.dealType || "STANDARD",
-              title: formData.dealDetails.title.trim(),
-              description: formData.dealDetails.description.trim(),
-              timeline: formData.dealDetails.timeline,
-              stages: formData.dealDetails.stages.map((stage) => ({
-                name: stage.name.trim(),
-                paymentPercentage: stage.paymentPercentage,
-                requirements: stage.requirements.filter((req) => req.trim()),
-                timelineInDays: stage.timelineInDays,
-                requiredDocuments: stage.requiredDocuments.filter((doc) =>
-                  doc.trim()
-                ),
-              })),
+              ...formData.dealDetails,
               requireAllPartyApproval: true,
               stageTransitionDelay: 24,
+              customStageRules: {
+                allowPartialPayments: false,
+                requireDocumentVerification: true
+              }
             },
+            escrowConditions: {
+              timeoutPeriod: 72,
+              autoReleaseHours: 48
+            }
           } as CreatePaymentLinkDto;
           break;
 
@@ -1050,6 +1293,24 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
       {renderTransactionTypeFields()}
     </div>
   );
+
+  const handleFileSelection = (index: number, files: FileList | null) => {
+    if (!files) return;
+
+    const newStages = [...formData.dealDetails.stages];
+    newStages[index] = {
+      ...newStages[index],
+      requiredDocuments: Array.from(files).map(file => file.name)
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      dealDetails: {
+        ...prev.dealDetails,
+        stages: newStages,
+      },
+    }));
+  };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">

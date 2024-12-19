@@ -1,31 +1,32 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 const API_URL = "https://espeespay-backend.onrender.com";
+// const API_URL = "http://localhost:10000";
 
 export enum PaymentLinkType {
-  BUYING = 'BUYING',
-  SELLING = 'SELLING'
+  BUYING = "BUYING",
+  SELLING = "SELLING",
 }
 
 export enum TransactionType {
-  CRYPTOCURRENCY = 'CRYPTOCURRENCY',
-  SERVICES = 'SERVICES',
-  DEALS = 'DEALS'
+  CRYPTOCURRENCY = "CRYPTOCURRENCY",
+  SERVICES = "SERVICES",
+  DEALS = "DEALS",
 }
 
 export enum VerificationMethod {
-  BLOCKCHAIN_CONFIRMATION = 'BLOCKCHAIN_CONFIRMATION',
-  SELLER_PROOF_SUBMISSION = 'SELLER_PROOF_SUBMISSION',
-  BUYER_CONFIRMATION = 'BUYER_CONFIRMATION',
-  THIRD_PARTY_ARBITRATION = 'THIRD_PARTY_ARBITRATION',
-  ADMIN_VERIFICATION = 'ADMIN_VERIFICATION',
-  AUTOMATED_SERVICE_CHECK = 'AUTOMATED_SERVICE_CHECK'
+  BLOCKCHAIN_CONFIRMATION = "BLOCKCHAIN_CONFIRMATION",
+  SELLER_PROOF_SUBMISSION = "SELLER_PROOF_SUBMISSION",
+  BUYER_CONFIRMATION = "BUYER_CONFIRMATION",
+  THIRD_PARTY_ARBITRATION = "THIRD_PARTY_ARBITRATION",
+  ADMIN_VERIFICATION = "ADMIN_VERIFICATION",
+  AUTOMATED_SERVICE_CHECK = "AUTOMATED_SERVICE_CHECK",
 }
 
 export enum PaymentMethodType {
-  CARD = 'CARD',
-  BANK_TRANSFER = 'BANK_TRANSFER',
-  CRYPTOCURRENCY = 'CRYPTOCURRENCY'
+  CARD = "CARD",
+  BANK_TRANSFER = "BANK_TRANSFER",
+  CRYPTOCURRENCY = "CRYPTOCURRENCY",
 }
 
 export interface PaymentLink {
@@ -37,7 +38,7 @@ export interface PaymentLink {
   defaultAmount: number;
   defaultCurrency: string;
   description?: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
   blockchainStatus?: string;
   verificationMethod?: VerificationMethod;
   createdAt: string;
@@ -45,7 +46,7 @@ export interface PaymentLink {
 
 export interface PhysicalGoodsDetails {
   productName: string;
-  condition: 'NEW' | 'USED' | 'REFURBISHED';
+  condition: "NEW" | "USED" | "REFURBISHED";
   shippingMethods: string[];
   estimatedDeliveryDays: number;
   productImages: string[];
@@ -59,17 +60,16 @@ export interface DigitalGoodsDetails {
   downloadLimit: number;
 }
 
-export interface ServicesDetails {
-  serviceName: string;
-  duration: number;
-  deliveryMethod: 'REMOTE' | 'IN_PERSON' | 'HYBRID';
-  milestones: {
-    name: string;
-    description: string;
-    amount: number;
-    percentage: number;
-    order: number;
-  }[];
+export interface ServiceDetails {
+  description: string;
+  deliveryTimeline: string;
+  terms: {
+    contractTerms: string;
+    paymentSchedule: string;
+    cancellationTerms: string;
+    disputeResolution: string;
+    additionalClauses: string[];
+  };
 }
 
 export interface CryptocurrencyDetails {
@@ -99,9 +99,19 @@ export interface DealDetails {
 
 export interface PaymentMethod {
   methodId: string;
-  type: string;
+  type: PaymentMethodType;
   isDefault: boolean;
-  details: Record<string, any>;
+  details: {
+    supportedCards?: string[];
+    supportedBanks?: string[];
+    supportedNetworks?: string[];
+  };
+}
+
+export interface ServiceProof {
+  description: string;
+  proofFiles: string[];
+  completionDate: string;
 }
 
 export interface CreatePaymentLinkDto {
@@ -110,11 +120,11 @@ export interface CreatePaymentLinkDto {
   transactionType: TransactionType;
   defaultAmount: number;
   defaultCurrency: string;
+  isAmountNegotiable?: boolean;
   verificationMethod?: VerificationMethod;
   paymentMethods: PaymentMethod[];
-  physicalGoodsDetails?: PhysicalGoodsDetails;
-  digitalGoodsDetails?: DigitalGoodsDetails;
-  servicesDetails?: ServicesDetails;
+  serviceDetails?: ServiceDetails;
+  serviceProof?: ServiceProof;
   cryptocurrencyDetails?: CryptocurrencyDetails;
   dealDetails?: DealDetails;
 }
@@ -130,7 +140,7 @@ interface CreatePaymentLinkResponse {
     defaultAmount: number;
     defaultCurrency: string;
     description?: string;
-    status: 'ACTIVE' | 'INACTIVE';
+    status: "ACTIVE" | "INACTIVE";
   };
 }
 
@@ -209,7 +219,9 @@ export const useCreatePaymentLink = () => {
       const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(responseData.message || "Failed to create payment link");
+        throw new Error(
+          responseData.message || "Failed to create payment link"
+        );
       }
 
       return responseData;
@@ -218,16 +230,23 @@ export const useCreatePaymentLink = () => {
 };
 
 export const useInitiateTransaction = () => {
-  return useMutation<TransactionResponse, Error, { linkId: string; data: InitiateTransactionDto }>({
+  return useMutation<
+    TransactionResponse,
+    Error,
+    { linkId: string; data: InitiateTransactionDto }
+  >({
     mutationFn: async ({ linkId, data }) => {
-      const response = await fetch(`${API_URL}/payment-links/${linkId}/transactions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `${API_URL}/payment-links/${linkId}/transactions`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify(data),
+        }
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to initiate transaction");
@@ -239,7 +258,10 @@ export const useInitiateTransaction = () => {
 
 export const useUpdatePaymentLinkSettings = () => {
   return useMutation({
-    mutationFn: async (data: { defaultCurrency: string; defaultExpirationTime: number }) => {
+    mutationFn: async (data: {
+      defaultCurrency: string;
+      defaultExpirationTime: number;
+    }) => {
       const response = await fetch(`${API_URL}/payment-links/settings`, {
         method: "PATCH",
         headers: {
@@ -256,11 +278,11 @@ export const useUpdatePaymentLinkSettings = () => {
 
 export const useUpdateVerification = () => {
   return useMutation<
-    VerificationResponse, 
-    Error, 
-    { 
-      transactionId: string; 
-      method: VerificationMethod; 
+    VerificationResponse,
+    Error,
+    {
+      transactionId: string;
+      method: VerificationMethod;
       data: VerificationDetails;
     }
   >({
@@ -279,7 +301,7 @@ export const useUpdateVerification = () => {
           }),
         }
       );
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Verification failed");
@@ -291,10 +313,10 @@ export const useUpdateVerification = () => {
 
 export const useConfirmDelivery = () => {
   return useMutation<
-    { status: string }, 
-    Error, 
-    { 
-      transactionId: string; 
+    { status: string },
+    Error,
+    {
+      transactionId: string;
       isConfirmed: boolean;
     }
   >({
@@ -310,7 +332,7 @@ export const useConfirmDelivery = () => {
           body: JSON.stringify({ isConfirmed }),
         }
       );
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Confirmation failed");
@@ -322,10 +344,10 @@ export const useConfirmDelivery = () => {
 
 export const useSubmitVerificationPin = () => {
   return useMutation<
-    { status: string }, 
-    Error, 
-    { 
-      transactionId: string; 
+    { status: string },
+    Error,
+    {
+      transactionId: string;
       pin: string;
     }
   >({
@@ -341,7 +363,7 @@ export const useSubmitVerificationPin = () => {
           body: JSON.stringify({ pin }),
         }
       );
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "PIN verification failed");
@@ -353,10 +375,10 @@ export const useSubmitVerificationPin = () => {
 
 export const useSubmitTransactionHash = () => {
   return useMutation<
-    { status: string }, 
-    Error, 
-    { 
-      transactionId: string; 
+    { status: string },
+    Error,
+    {
+      transactionId: string;
       hash: string;
     }
   >({
@@ -372,7 +394,7 @@ export const useSubmitTransactionHash = () => {
           body: JSON.stringify({ transactionHash: hash }),
         }
       );
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Hash submission failed");
@@ -385,17 +407,20 @@ export const useSubmitTransactionHash = () => {
 export const useDisablePaymentLink = () => {
   return useMutation<{ message: string }, Error, string>({
     mutationFn: async (linkId: string) => {
-      const response = await fetch(`${API_URL}/payment-links/${linkId}/disable`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-        },
-      });
+      const response = await fetch(
+        `${API_URL}/payment-links/${linkId}/disable`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to disable payment link');
+        throw new Error(error.message || "Failed to disable payment link");
       }
 
       return response.json();

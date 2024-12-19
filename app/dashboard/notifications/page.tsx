@@ -15,60 +15,69 @@ import {
   FileText,
   CheckCircle2,
   AlertCircle,
-  Info
+  Info,
+  InboxIcon
 } from "lucide-react";
 import Link from "next/link";
 import NotificationsModal from "../../../components/NotificationsModal";
 import SettingsModal from "../../../components/SettingsModal";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getNotifications, markAllNotificationsAsRead } from './api';
+import { toast } from 'sonner';
+import { NotificationType, notificationTypeConfig } from '../../types/notifications';
 
 const NotificationsPage: React.FC = () => {
-  const notifications = [
-    {
-      id: 1,
-      title: "Payment Received",
-      message: "You received a payment of $500.00 from John Doe",
-      time: "2 minutes ago",
-      type: "success",
-      isRead: false,
-    },
-    {
-      id: 2,
-      title: "KYC Verification Approved",
-      message: "Your KYC verification has been approved",
-      time: "1 hour ago",
-      type: "success",
-      isRead: false,
-    },
-    {
-      id: 3,
-      title: "New Feature Available",
-      message: "Check out our new payment link feature",
-      time: "2 hours ago",
-      type: "info",
-      isRead: true,
-    },
-    {
-      id: 4,
-      title: "Security Alert",
-      message: "New login detected from unknown device",
-      time: "1 day ago",
-      type: "warning",
-      isRead: true,
-    },
-  ];
+  const queryClient = useQueryClient();
+  
+  const { data, isLoading } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: getNotifications,
+  });
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "success":
-        return <CheckCircle2 className="h-5 w-5 text-green-500" />;
-      case "warning":
-        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
-      case "info":
-        return <Info className="h-5 w-5 text-blue-500" />;
+  const markAllReadMutation = useMutation({
+    mutationFn: markAllNotificationsAsRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      toast.success('All notifications marked as read');
+    },
+    onError: () => {
+      toast.error('Failed to mark notifications as read');
+    },
+  });
+
+  const handleMarkAllRead = () => {
+    markAllReadMutation.mutate();
+  };
+
+  const getNotificationIcon = (type: NotificationType) => {
+    const config = notificationTypeConfig[type];
+    switch (config?.icon) {
+      case 'success':
+        return <CheckCircle2 className={`h-5 w-5 text-${config.color}-500`} />;
+      case 'warning':
+        return <AlertCircle className={`h-5 w-5 text-${config.color}-500`} />;
+      case 'info':
+        return <Info className={`h-5 w-5 text-${config.color}-500`} />;
       default:
         return <Bell className="h-5 w-5 text-gray-500" />;
     }
   };
+
+  const EmptyState = () => (
+    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border border-blue-100">
+      <InboxIcon className="h-16 w-16 text-gray-300 mb-4" />
+      <h3 className="text-lg font-medium text-gray-900 mb-2">
+        No notifications yet
+      </h3>
+      <p className="text-sm text-gray-500 text-center max-w-sm">
+        When you receive notifications about payments, security alerts, or new features, 
+        they'll show up here.
+      </p>
+    </div>
+  );
+
+  const notifications = data?.notifications ?? [];
+  const hasNotifications = notifications.length > 0;
 
   return (
     <DashboardLayout>
@@ -147,43 +156,50 @@ const NotificationsPage: React.FC = () => {
             <CardHeader className="p-4 md:p-6">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-gray-900">Recent Notifications</CardTitle>
-                <Button variant="ghost" className="text-sm text-blue-600 hover:text-blue-700">
-                  Mark all as read
-                </Button>
+                {hasNotifications && (
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-600 hover:text-blue-700"
+                    onClick={handleMarkAllRead}
+                    disabled={markAllReadMutation.isPending}
+                  >
+                    Mark all as read
+                  </Button>
+                )}
               </div>
             </CardHeader>
             <CardContent className="p-4 md:p-6">
-              <div className="space-y-4">
-                {notifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={`p-4 border rounded-lg ${
-                      notification.isRead ? 'bg-white' : 'bg-blue-50 border-blue-100'
-                    }`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      {getNotificationIcon(notification.type)}
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900">
-                          {notification.title}
-                        </h4>
-                        <p className="text-sm text-gray-500 mt-1">
-                          {notification.message}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-2">
-                          {notification.time}
-                        </p>
+              {isLoading ? (
+                <div className="text-center p-4">Loading...</div>
+              ) : !hasNotifications ? (
+                <EmptyState />
+              ) : (
+                <div className="space-y-4">
+                  {notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`p-4 border rounded-lg ${
+                        !notification.read ? 'bg-blue-50 border-blue-100' : 'bg-white'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        {getNotificationIcon(notification.type)}
+                        <div className="flex-1">
+                          <h4 className="text-sm font-medium text-gray-900">
+                            {notification.title}
+                          </h4>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {notification.message}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-2">
+                            {new Date(notification.createdAt).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              <Button 
-                variant="outline" 
-                className="w-full mt-4 border-blue-200 text-blue-600 hover:bg-blue-50"
-              >
-                View All Notifications
-              </Button>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

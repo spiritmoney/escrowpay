@@ -11,9 +11,16 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useTheme } from "next-themes";
+import { useProfile, useUpdateSecuritySettings } from "@/app/dashboard/profile/api";
+import { toast } from "sonner";
 
 const SettingsModal = () => {
   const [open, setOpen] = React.useState(false);
+  const { theme, setTheme } = useTheme();
+  const { data: profile } = useProfile();
+  const updateSecuritySettings = useUpdateSecuritySettings();
+
   const settingsLinks = [
     { title: "Account Settings", href: "/dashboard/profile" },
     { title: "Subscription Settings", href: "/dashboard/plan" },
@@ -21,6 +28,23 @@ const SettingsModal = () => {
     { title: "Notification Preferences", href: "/dashboard/profile#notifications" },
     { title: "Security Settings", href: "/dashboard/profile#security" },
   ];
+
+  // Handle dark mode toggle
+  const handleDarkModeToggle = (checked: boolean) => {
+    setTheme(checked ? "dark" : "light");
+  };
+
+  // Handle 2FA toggle
+  const handle2FAToggle = async (checked: boolean) => {
+    try {
+      await updateSecuritySettings.mutateAsync({
+        twoFactorEnabled: checked,
+      });
+      toast.success(`Two-factor authentication ${checked ? 'enabled' : 'disabled'}`);
+    } catch (error) {
+      toast.error("Failed to update two-factor authentication");
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -38,25 +62,30 @@ const SettingsModal = () => {
           <DialogTitle>Settings</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-6">
-          {/* Quick Settings */}
+          {/* Quick Settings
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="email-notifications" className="text-sm font-medium">Email Notifications</Label>
-              <Switch id="email-notifications" />
+              <Label htmlFor="two-factor-auth" className="text-sm font-medium">
+                Two-Factor Authentication
+              </Label>
+              <Switch 
+                id="two-factor-auth"
+                checked={profile?.twoFactorEnabled}
+                onCheckedChange={handle2FAToggle}
+                disabled={updateSecuritySettings.isPending}
+              />
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="sms-notifications" className="text-sm font-medium">SMS Notifications</Label>
-              <Switch id="sms-notifications" />
+              <Label htmlFor="dark-mode" className="text-sm font-medium">
+                Dark Mode
+              </Label>
+              <Switch 
+                id="dark-mode"
+                checked={theme === "dark"}
+                onCheckedChange={handleDarkModeToggle}
+              />
             </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="two-factor-auth" className="text-sm font-medium">Two-Factor Authentication</Label>
-              <Switch id="two-factor-auth" />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="dark-mode" className="text-sm font-medium">Dark Mode</Label>
-              <Switch id="dark-mode" />
-            </div>
-          </div>
+          </div> */}
 
           {/* Settings Links */}
           <div className="pt-4 border-t">
@@ -75,14 +104,14 @@ const SettingsModal = () => {
             </div>
           </div>
 
-          <div className="pt-4 border-t">
+          {/* <div className="pt-4 border-t">
             <Button 
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => setOpen(false)}
             >
               Save Changes
             </Button>
-          </div>
+          </div> */}
         </div>
       </DialogContent>
     </Dialog>
