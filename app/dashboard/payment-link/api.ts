@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-const API_URL = "http://localhost:10000";
+const API_URL = "https://espeespay-backend.onrender.com";
 
 export enum PaymentLinkType {
   BUYING = 'BUYING',

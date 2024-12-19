@@ -5,7 +5,7 @@ import {
   VerificationMethod 
 } from "@/app/dashboard/payment-link/api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:10000";
+const API_URL = "https://espeespay-backend.onrender.com";
 
 interface CryptoPaymentDetails {
   network: string;
