@@ -5,7 +5,8 @@ import {
   VerificationMethod 
 } from "@/app/dashboard/payment-link/api";
 
-const API_URL = "https://espeespay-backend.onrender.com";
+// const API_URL = "https://espeespay-backend.onrender.com";
+const API_URL = "http://localhost:10000";
 
 interface CryptoPaymentDetails {
   network: string;
@@ -26,18 +27,19 @@ interface BankTransferDetails {
   accountType: string;
 }
 
-interface InitiateTransactionData {
+export interface InitiateTransactionData {
   amount: number;
   currency: string;
   customerEmail: string;
   customerName: string;
-  customerAddress?: string;
   customerPhone?: string;
+  customerAddress?: string;
   paymentMethod: string;
   buyerWalletAddress?: string;
   paymentDetails?: {
     network?: string;
     tokenSymbol?: string;
+    [key: string]: any;
   };
 }
 

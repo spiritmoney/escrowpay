@@ -9,46 +9,81 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/app/components/EmptyState";
+import { Activity } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchWithAuth } from "@/app/dashboard/api";
+import { TransactionStatus, Currency } from "@/app/dashboard/api";
 
-const transactions = [
-  {
-    id: 1,
-    date: "2023-06-01",
-    amount: 100.0,
-    status: "completed",
-    customer: "John Doe",
-  },
-  {
-    id: 2,
-    date: "2023-06-02",
-    amount: 75.5,
-    status: "pending",
-    customer: "Jane Smith",
-  },
-  {
-    id: 3,
-    date: "2023-06-03",
-    amount: 200.0,
-    status: "completed",
-    customer: "Bob Johnson",
-  },
-  {
-    id: 4,
-    date: "2023-06-04",
-    amount: 50.0,
-    status: "failed",
-    customer: "Alice Brown",
-  },
-  {
-    id: 5,
-    date: "2023-06-05",
-    amount: 150.0,
-    status: "completed",
-    customer: "Charlie Wilson",
-  },
-];
+// Define the Transaction type
+interface Transaction {
+  id: string;
+  createdAt: string;
+  amount: number;
+  currency: Currency;
+  status: TransactionStatus;
+  customerId: string;
+}
+
+// Add a hook to fetch transactions
+const useTransactions = () => {
+  return useQuery<Transaction[]>({
+    queryKey: ["transactions"],
+    queryFn: async () => {
+      try {
+        const transactions = await fetchWithAuth<Transaction[]>("/transactions")
+          .catch(error => {
+            if (error?.message === "No transactions found") return [];
+            throw error;
+          });
+        return transactions || [];
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        return [];
+      }
+    },
+  });
+};
 
 const TransactionsList: React.FC = () => {
+  const { data: transactions, isLoading } = useTransactions();
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Transactions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!transactions?.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Transactions</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center py-8">
+          <EmptyState
+            icon={Activity}
+            title="No transactions yet"
+            description="Your recent transactions will appear here."
+            compact
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -59,7 +94,7 @@ const TransactionsList: React.FC = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>
-              <TableHead>Customer</TableHead>
+              <TableHead>Customer ID</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
@@ -67,20 +102,24 @@ const TransactionsList: React.FC = () => {
           <TableBody>
             {transactions.map((transaction) => (
               <TableRow key={transaction.id}>
-                <TableCell>{transaction.date}</TableCell>
-                <TableCell>{transaction.customer}</TableCell>
-                <TableCell>${transaction.amount.toFixed(2)}</TableCell>
+                <TableCell>
+                  {new Date(transaction.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>{transaction.customerId}</TableCell>
+                <TableCell>
+                  {transaction.currency} {transaction.amount.toFixed(2)}
+                </TableCell>
                 <TableCell>
                   <Badge
                     variant={
-                      transaction.status === "completed"
+                      transaction.status === TransactionStatus.COMPLETED
                         ? "secondary"
-                        : transaction.status === "pending"
+                        : transaction.status === TransactionStatus.PENDING
                         ? "outline"
                         : "destructive"
                     }
                   >
-                    {transaction.status}
+                    {transaction.status.toLowerCase()}
                   </Badge>
                 </TableCell>
               </TableRow>

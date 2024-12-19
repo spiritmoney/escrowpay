@@ -28,8 +28,7 @@ interface ResetPasswordData {
 }
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://espeespay-backend.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://espeespay-backend.onrender.com";
 
 const handleApiError = async (response: Response) => {
   const data = await response.json();
@@ -37,8 +36,8 @@ const handleApiError = async (response: Response) => {
     throw {
       response: {
         data: data,
-        status: response.status
-      }
+        status: response.status,
+      },
     };
   }
   return data;
@@ -92,11 +91,11 @@ export const useAuth = () => {
         },
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         throw new Error("OTP verification failed");
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -113,11 +112,11 @@ export const useAuth = () => {
         },
         body: JSON.stringify({ email }),
       });
-      
+
       if (!response.ok) {
         throw new Error("Failed to send reset email");
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -134,11 +133,11 @@ export const useAuth = () => {
         },
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         throw new Error("Password reset failed");
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -153,4 +152,4 @@ export const useAuth = () => {
     forgotPassword,
     resetPassword,
   };
-}; 
+};

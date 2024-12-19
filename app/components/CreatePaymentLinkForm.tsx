@@ -41,7 +41,7 @@ interface DealStage {
   requiredDocuments: string[];
 }
 
-interface FormData {
+interface FormState {
   name: string;
   defaultAmount: string;
   defaultCurrency: string;
@@ -60,12 +60,18 @@ interface FormData {
     completionDate: string;
   };
   cryptocurrencyDetails: {
-    tokenSymbol: string;
-    tokenAddress: string;
-    chainId: number;
     network: string;
-    pricePerToken: number;
-    minimumAmount: number;
+    tokenSymbol: string;
+    tokenAddress?: string;
+    chainId?: number;
+    decimals?: number;
+    requiredConfirmations?: number;
+    acceptedTokens?: string[];
+    networkOptions?: Array<{
+      chainId: number;
+      name: string;
+      requiredConfirmations: number;
+    }>;
   };
   dealDetails: {
     dealType: string;
@@ -85,79 +91,81 @@ interface FormData {
 }
 
 const TOKENS = {
-  'BTC-NETWORK': {
-    symbol: 'BTC',
-    name: 'Bitcoin',
+  "BTC-NETWORK": {
+    symbol: "BTC",
+    name: "Bitcoin",
     chainId: 1,
-    address: '0x0000000000000000000000000000000000000000', // Native BTC
-    network: 'Bitcoin Network'
+    address: "0x0000000000000000000000000000000000000000", // Native BTC
+    network: "Bitcoin Network",
   },
-  'ETH-MAINNET': {
-    symbol: 'ETH',
-    name: 'Ethereum',
+  "ETH-MAINNET": {
+    symbol: "ETH",
+    name: "Ethereum",
     chainId: 1,
-    address: '0x0000000000000000000000000000000000000000', // Native ETH
-    network: 'Ethereum Mainnet'
+    address: "0x0000000000000000000000000000000000000000", // Native ETH
+    network: "Ethereum Mainnet",
   },
-  'USDT-MAINNET': {
-    symbol: 'USDT',
-    name: 'Tether USD',
+  "USDT-MAINNET": {
+    symbol: "USDT",
+    name: "Tether USD",
     chainId: 1,
-    address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-    network: 'Ethereum Mainnet'
+    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    network: "Ethereum Mainnet",
   },
-  'USDC-MAINNET': {
-    symbol: 'USDC',
-    name: 'USD Coin',
+  "USDC-MAINNET": {
+    symbol: "USDC",
+    name: "USD Coin",
     chainId: 1,
-    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    network: 'Ethereum Mainnet'
+    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    network: "Ethereum Mainnet",
   },
-  'BNB-BSC': {
-    symbol: 'BNB',
-    name: 'BNB',
+  "BNB-BSC": {
+    symbol: "BNB",
+    name: "BNB",
     chainId: 56,
-    address: '0x0000000000000000000000000000000000000000', // Native BNB
-    network: 'BNB Smart Chain'
+    address: "0x0000000000000000000000000000000000000000", // Native BNB
+    network: "BNB Smart Chain",
   },
-  'USDT-BSC': {
-    symbol: 'USDT',
-    name: 'Tether USD',
+  "USDT-BSC": {
+    symbol: "USDT",
+    name: "Tether USD",
     chainId: 56,
-    address: '0x55d398326f99059fF775485246999027B3197955',
-    network: 'BNB Smart Chain'
+    address: "0x55d398326f99059fF775485246999027B3197955",
+    network: "BNB Smart Chain",
   },
-  'USDC-BSC': {
-    symbol: 'USDC',
-    name: 'USD Coin',
+  "USDC-BSC": {
+    symbol: "USDC",
+    name: "USD Coin",
     chainId: 56,
-    address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-    network: 'BNB Smart Chain'
-  }
+    address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    network: "BNB Smart Chain",
+  },
 };
 
 const DEFAULT_DEAL_STAGES: DealStage[] = [
   {
-    name: 'Initial Stage',
+    name: "Initial Stage",
     paymentPercentage: 25,
-    requirements: ['Enter requirement 1', 'Enter requirement 2'],
+    requirements: ["Enter requirement 1", "Enter requirement 2"],
     timelineInDays: 30,
-    requiredDocuments: ['Document 1', 'Document 2']
+    requiredDocuments: ["Document 1", "Document 2"],
   },
   {
-    name: 'Second Stage',
+    name: "Second Stage",
     paymentPercentage: 25,
-    requirements: ['Enter requirement 1', 'Enter requirement 2'],
+    requirements: ["Enter requirement 1", "Enter requirement 2"],
     timelineInDays: 30,
-    requiredDocuments: ['Document 1', 'Document 2']
-  }
+    requiredDocuments: ["Document 1", "Document 2"],
+  },
 ];
 
-const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }) => {
+const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({
+  onClose,
+}) => {
   const queryClient = useQueryClient();
   const createPaymentLink = useCreatePaymentLink();
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormState>({
     name: "",
     defaultAmount: "",
     defaultCurrency: "USD",
@@ -167,21 +175,29 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
     servicesDetails: {
       description: "",
       terms: {
-        paymentTerms: "Full payment upfront"
-      }
+        paymentTerms: "Full payment upfront",
+      },
     },
     serviceProof: {
       description: "",
       proofFiles: [],
-      completionDate: ""
+      completionDate: "",
     },
     cryptocurrencyDetails: {
-      tokenSymbol: "",
-      tokenAddress: "",
-      chainId: 1,
       network: "ETHEREUM",
-      pricePerToken: 0,
-      minimumAmount: 0,
+      tokenSymbol: "ETH",
+      tokenAddress: "",
+      chainId: undefined,
+      decimals: undefined,
+      requiredConfirmations: undefined,
+      acceptedTokens: ["ETH", "USDT", "USDC"],
+      networkOptions: [
+        {
+          chainId: 1,
+          name: "ETHEREUM",
+          requiredConfirmations: 12
+        }
+      ]
     },
     dealDetails: {
       dealType: "STANDARD",
@@ -195,22 +211,22 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         paymentSchedule: "",
         cancellationTerms: "",
         disputeResolution: "",
-        additionalClauses: []
-      }
-    }
+        additionalClauses: [],
+      },
+    },
   });
 
   const handleTransactionTypeChange = (value: TransactionType) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      transactionType: value
+      transactionType: value,
     }));
   };
 
   const handleTokenChange = (value: string) => {
     const token = TOKENS[value as keyof typeof TOKENS];
-    console.log('Selected token:', token); // Debug log
-    
+    console.log("Selected token:", token);
+
     setFormData(prev => ({
       ...prev,
       cryptocurrencyDetails: {
@@ -218,7 +234,13 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         tokenSymbol: token.symbol,
         tokenAddress: token.address,
         chainId: token.chainId,
-        network: token.network
+        network: token.network,
+        acceptedTokens: [token.symbol],
+        networkOptions: [{
+          chainId: token.chainId,
+          name: token.network,
+          requiredConfirmations: 12
+        }]
       }
     }));
   };
@@ -232,32 +254,45 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
               <Label htmlFor="tokenSymbol">Token</Label>
               <Select
                 value={`${formData.cryptocurrencyDetails.tokenSymbol}-${
-                  formData.cryptocurrencyDetails.chainId === 1 ? 'MAINNET' : 'BSC'
+                  formData.cryptocurrencyDetails.chainId === 1
+                    ? "MAINNET"
+                    : "BSC"
                 }`}
                 onValueChange={(value) => {
                   const token = TOKENS[value as keyof typeof TOKENS];
-                  setFormData(prev => ({
+                  setFormData((prev) => ({
                     ...prev,
                     cryptocurrencyDetails: {
                       ...prev.cryptocurrencyDetails,
                       tokenSymbol: token.symbol,
                       tokenAddress: token.address,
-                      chainId: token.chainId
-                    }
+                      chainId: token.chainId,
+                    },
                   }));
                 }}
               >
                 <SelectTrigger id="tokenSymbol">
-                  <SelectValue placeholder="Select token" className="text-black" />
+                  <SelectValue
+                    placeholder="Select token"
+                    className="text-black"
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {/* <SelectItem value="BTC-NETWORK">BTC (Bitcoin Network)</SelectItem> */}
                   {/* <SelectItem value="ETH-MAINNET">ETH (Ethereum Mainnet)</SelectItem> */}
-                  <SelectItem value="USDT-MAINNET">USDT (Ethereum Mainnet)</SelectItem>
-                  <SelectItem value="USDC-MAINNET">USDC (Ethereum Mainnet)</SelectItem>
+                  <SelectItem value="USDT-MAINNET">
+                    USDT (Ethereum Mainnet)
+                  </SelectItem>
+                  <SelectItem value="USDC-MAINNET">
+                    USDC (Ethereum Mainnet)
+                  </SelectItem>
                   {/* <SelectItem value="BNB-BSC">BNB (BNB Smart Chain)</SelectItem> */}
-                  <SelectItem value="USDT-BSC">USDT (BNB Smart Chain)</SelectItem>
-                  <SelectItem value="USDC-BSC">USDC (BNB Smart Chain)</SelectItem>
+                  <SelectItem value="USDT-BSC">
+                    USDT (BNB Smart Chain)
+                  </SelectItem>
+                  <SelectItem value="USDC-BSC">
+                    USDC (BNB Smart Chain)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -271,9 +306,11 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                 className="bg-muted"
               />
               <p className="text-xs text-muted-foreground">
-                Contract address for {formData.cryptocurrencyDetails.tokenSymbol} on {
-                  formData.cryptocurrencyDetails.chainId === 1 ? 'Ethereum Mainnet' : 'BNB Smart Chain'
-                }
+                Contract address for{" "}
+                {formData.cryptocurrencyDetails.tokenSymbol} on{" "}
+                {formData.cryptocurrencyDetails.chainId === 1
+                  ? "Ethereum Mainnet"
+                  : "BNB Smart Chain"}
               </p>
             </div>
 
@@ -281,43 +318,13 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
               <Label htmlFor="chainId">Network</Label>
               <Input
                 id="chainId"
-                value={formData.cryptocurrencyDetails.chainId === 1 ? 'Ethereum Mainnet' : 'BNB Smart Chain'}
+                value={
+                  formData.cryptocurrencyDetails.chainId === 1
+                    ? "Ethereum Mainnet"
+                    : "BNB Smart Chain"
+                }
                 disabled
                 className="bg-muted"
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="pricePerToken">Price per Token</Label>
-              <Input
-                id="pricePerToken"
-                type="number"
-                value={formData.cryptocurrencyDetails.pricePerToken}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  cryptocurrencyDetails: {
-                    ...prev.cryptocurrencyDetails,
-                    pricePerToken: Number(e.target.value)
-                  }
-                }))}
-                required
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="minimumAmount">Minimum Transaction Amount</Label>
-              <Input
-                id="minimumAmount"
-                type="number"
-                value={formData.cryptocurrencyDetails.minimumAmount}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  cryptocurrencyDetails: {
-                    ...prev.cryptocurrencyDetails,
-                    minimumAmount: Number(e.target.value)
-                  }
-                }))}
-                required
               />
             </div>
           </div>
@@ -331,13 +338,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
               <Textarea
                 placeholder="Describe your service..."
                 value={formData.servicesDetails.description}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  servicesDetails: {
-                    ...prev.servicesDetails,
-                    description: e.target.value
-                  }
-                }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    servicesDetails: {
+                      ...prev.servicesDetails,
+                      description: e.target.value,
+                    },
+                  }))
+                }
                 required
               />
             </div>
@@ -346,24 +355,32 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
               <Label>Payment Terms</Label>
               <Select
                 value={formData.servicesDetails.terms.paymentTerms}
-                onValueChange={(value) => setFormData(prev => ({
-                  ...prev,
-                  servicesDetails: {
-                    ...prev.servicesDetails,
-                    terms: {
-                      ...prev.servicesDetails.terms,
-                      paymentTerms: value
-                    }
-                  }
-                }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    servicesDetails: {
+                      ...prev.servicesDetails,
+                      terms: {
+                        ...prev.servicesDetails.terms,
+                        paymentTerms: value,
+                      },
+                    },
+                  }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select payment terms" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Full payment upfront">Full payment upfront</SelectItem>
-                  <SelectItem value="50% upfront, 50% on completion">50% upfront, 50% on completion</SelectItem>
-                  <SelectItem value="Payment on completion">Payment on completion</SelectItem>
+                  <SelectItem value="Full payment upfront">
+                    Full payment upfront
+                  </SelectItem>
+                  <SelectItem value="50% upfront, 50% on completion">
+                    50% upfront, 50% on completion
+                  </SelectItem>
+                  <SelectItem value="Payment on completion">
+                    Payment on completion
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -373,13 +390,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
               <Textarea
                 placeholder="Describe the proof required for service completion..."
                 value={formData.serviceProof.description}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  serviceProof: {
-                    ...prev.serviceProof,
-                    description: e.target.value
-                  }
-                }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    serviceProof: {
+                      ...prev.serviceProof,
+                      description: e.target.value,
+                    },
+                  }))
+                }
                 required
               />
             </div>
@@ -389,13 +408,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
               <Input
                 type="date"
                 value={formData.serviceProof.completionDate}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  serviceProof: {
-                    ...prev.serviceProof,
-                    completionDate: e.target.value
-                  }
-                }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    serviceProof: {
+                      ...prev.serviceProof,
+                      completionDate: e.target.value,
+                    },
+                  }))
+                }
                 required
               />
             </div>
@@ -408,7 +429,9 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={() => document.getElementById('proofFiles')?.click()}
+                    onClick={() =>
+                      document.getElementById("proofFiles")?.click()
+                    }
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Files
@@ -421,15 +444,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                     accept="image/*,.pdf,.doc,.docx"
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
-                      setFormData(prev => ({
+                      setFormData((prev) => ({
                         ...prev,
                         serviceProof: {
                           ...prev.serviceProof,
                           proofFiles: [
                             ...prev.serviceProof.proofFiles,
-                            ...files.map(file => file.name)
-                          ]
-                        }
+                            ...files.map((file) => file.name),
+                          ],
+                        },
                       }));
                     }}
                   />
@@ -448,14 +471,14 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                           size="sm"
                           className="h-auto p-1"
                           onClick={() => {
-                            setFormData(prev => ({
+                            setFormData((prev) => ({
                               ...prev,
                               serviceProof: {
                                 ...prev.serviceProof,
                                 proofFiles: prev.serviceProof.proofFiles.filter(
                                   (_, i) => i !== index
-                                )
-                              }
+                                ),
+                              },
                             }));
                           }}
                         >
@@ -487,13 +510,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         <Label>Deal Type</Label>
         <Input
           value={formData.dealDetails?.dealType}
-          onChange={(e) => setFormData(prev => ({
-            ...prev,
-            dealDetails: {
-              ...prev.dealDetails!,
-              dealType: e.target.value
-            }
-          }))}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              dealDetails: {
+                ...prev.dealDetails!,
+                dealType: e.target.value,
+              },
+            }))
+          }
           placeholder="e.g., Business Acquisition, Real Estate, Joint Venture"
           required
         />
@@ -503,13 +528,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         <Label>Deal Title</Label>
         <Input
           value={formData.dealDetails?.title}
-          onChange={(e) => setFormData(prev => ({
-            ...prev,
-            dealDetails: {
-              ...prev.dealDetails!,
-              title: e.target.value
-            }
-          }))}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              dealDetails: {
+                ...prev.dealDetails!,
+                title: e.target.value,
+              },
+            }))
+          }
           placeholder="Enter deal title"
           required
         />
@@ -519,13 +546,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         <Label>Description</Label>
         <Textarea
           value={formData.dealDetails?.description}
-          onChange={(e) => setFormData(prev => ({
-            ...prev,
-            dealDetails: {
-              ...prev.dealDetails!,
-              description: e.target.value
-            }
-          }))}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              dealDetails: {
+                ...prev.dealDetails!,
+                description: e.target.value,
+              },
+            }))
+          }
           placeholder="Describe the deal details"
           required
         />
@@ -535,13 +564,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         <Label>Timeline</Label>
         <Input
           value={formData.dealDetails?.timeline}
-          onChange={(e) => setFormData(prev => ({
-            ...prev,
-            dealDetails: {
-              ...prev.dealDetails!,
-              timeline: e.target.value
-            }
-          }))}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              dealDetails: {
+                ...prev.dealDetails!,
+                timeline: e.target.value,
+              },
+            }))
+          }
           placeholder="Expected timeline for deal completion"
           required
         />
@@ -555,7 +586,7 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
             variant="outline"
             size="sm"
             onClick={() => {
-              setFormData(prev => ({
+              setFormData((prev) => ({
                 ...prev,
                 dealDetails: {
                   ...prev.dealDetails!,
@@ -564,12 +595,12 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                     {
                       name: `Stage ${prev.dealDetails!.stages.length + 1}`,
                       paymentPercentage: 0,
-                      requirements: ['Enter requirement'],
+                      requirements: ["Enter requirement"],
                       timelineInDays: 30,
-                      requiredDocuments: []
-                    }
-                  ]
-                }
+                      requiredDocuments: [],
+                    },
+                  ],
+                },
               }));
             }}
           >
@@ -589,13 +620,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                       size="sm"
                       className="h-auto p-1 text-red-500 hover:text-red-700"
                       onClick={() => {
-                        const newStages = formData.dealDetails!.stages.filter((_, i) => i !== index);
-                        setFormData(prev => ({
+                        const newStages = formData.dealDetails!.stages.filter(
+                          (_, i) => i !== index
+                        );
+                        setFormData((prev) => ({
                           ...prev,
                           dealDetails: {
                             ...prev.dealDetails!,
-                            stages: newStages
-                          }
+                            stages: newStages,
+                          },
                         }));
                       }}
                     >
@@ -608,12 +641,12 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                   onChange={(e) => {
                     const newStages = [...formData.dealDetails!.stages];
                     newStages[index] = { ...stage, name: e.target.value };
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
                       dealDetails: {
                         ...prev.dealDetails!,
-                        stages: newStages
-                      }
+                        stages: newStages,
+                      },
                     }));
                   }}
                   placeholder="Enter stage name"
@@ -624,13 +657,16 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                     value={stage.paymentPercentage}
                     onChange={(e) => {
                       const newStages = [...formData.dealDetails!.stages];
-                      newStages[index] = { ...stage, paymentPercentage: Number(e.target.value) };
-                      setFormData(prev => ({
+                      newStages[index] = {
+                        ...stage,
+                        paymentPercentage: Number(e.target.value),
+                      };
+                      setFormData((prev) => ({
                         ...prev,
                         dealDetails: {
                           ...prev.dealDetails!,
-                          stages: newStages
-                        }
+                          stages: newStages,
+                        },
                       }));
                     }}
                     placeholder="Enter payment percentage"
@@ -640,19 +676,21 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
                   <span className="text-sm text-muted-foreground">%</span>
                 </div>
                 <Textarea
-                  value={stage.requirements.join('\n')}
+                  value={stage.requirements.join("\n")}
                   onChange={(e) => {
                     const newStages = [...formData.dealDetails!.stages];
-                    newStages[index] = { 
-                      ...stage, 
-                      requirements: e.target.value.split('\n').filter(r => r.trim()) 
+                    newStages[index] = {
+                      ...stage,
+                      requirements: e.target.value
+                        .split("\n")
+                        .filter((r) => r.trim()),
                     };
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
                       dealDetails: {
                         ...prev.dealDetails!,
-                        stages: newStages
-                      }
+                        stages: newStages,
+                      },
                     }));
                   }}
                   placeholder="Enter requirements (one per line)"
@@ -662,11 +700,17 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
             </Card>
           ))}
         </div>
-        {formData.dealDetails?.stages && formData.dealDetails.stages.length > 0 && (
-          <div className="text-sm text-muted-foreground mt-2">
-            Total percentage: {formData.dealDetails.stages.reduce((sum, stage) => sum + stage.paymentPercentage, 0)}%
-          </div>
-        )}
+        {formData.dealDetails?.stages &&
+          formData.dealDetails.stages.length > 0 && (
+            <div className="text-sm text-muted-foreground mt-2">
+              Total percentage:{" "}
+              {formData.dealDetails.stages.reduce(
+                (sum, stage) => sum + stage.paymentPercentage,
+                0
+              )}
+              %
+            </div>
+          )}
       </div>
 
       <div className="grid gap-2">
@@ -674,61 +718,69 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         <div className="space-y-4">
           <Textarea
             value={formData.dealDetails?.terms.contractTerms}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              dealDetails: {
-                ...prev.dealDetails!,
-                terms: {
-                  ...prev.dealDetails!.terms,
-                  contractTerms: e.target.value
-                }
-              }
-            }))}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                dealDetails: {
+                  ...prev.dealDetails!,
+                  terms: {
+                    ...prev.dealDetails!.terms,
+                    contractTerms: e.target.value,
+                  },
+                },
+              }))
+            }
             placeholder="Contract terms"
             required
           />
           <Textarea
             value={formData.dealDetails?.terms.paymentSchedule}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              dealDetails: {
-                ...prev.dealDetails!,
-                terms: {
-                  ...prev.dealDetails!.terms,
-                  paymentSchedule: e.target.value
-                }
-              }
-            }))}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                dealDetails: {
+                  ...prev.dealDetails!,
+                  terms: {
+                    ...prev.dealDetails!.terms,
+                    paymentSchedule: e.target.value,
+                  },
+                },
+              }))
+            }
             placeholder="Payment schedule"
             required
           />
           <Textarea
             value={formData.dealDetails?.terms.cancellationTerms}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              dealDetails: {
-                ...prev.dealDetails!,
-                terms: {
-                  ...prev.dealDetails!.terms,
-                  cancellationTerms: e.target.value
-                }
-              }
-            }))}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                dealDetails: {
+                  ...prev.dealDetails!,
+                  terms: {
+                    ...prev.dealDetails!.terms,
+                    cancellationTerms: e.target.value,
+                  },
+                },
+              }))
+            }
             placeholder="Cancellation terms"
             required
           />
           <Textarea
             value={formData.dealDetails?.terms.disputeResolution}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              dealDetails: {
-                ...prev.dealDetails!,
-                terms: {
-                  ...prev.dealDetails!.terms,
-                  disputeResolution: e.target.value
-                }
-              }
-            }))}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                dealDetails: {
+                  ...prev.dealDetails!,
+                  terms: {
+                    ...prev.dealDetails!.terms,
+                    disputeResolution: e.target.value,
+                  },
+                },
+              }))
+            }
             placeholder="Dispute resolution process"
             required
           />
@@ -739,7 +791,7 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       // Basic validation
       if (!formData.name.trim()) {
@@ -759,9 +811,10 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         transactionType: formData.transactionType,
         defaultAmount: Number(formData.defaultAmount),
         defaultCurrency: formData.defaultCurrency,
-        verificationMethod: formData.transactionType === TransactionType.CRYPTOCURRENCY
-          ? VerificationMethod.BLOCKCHAIN_CONFIRMATION
-          : formData.transactionType === TransactionType.DEALS
+        verificationMethod:
+          formData.transactionType === TransactionType.CRYPTOCURRENCY
+            ? VerificationMethod.BLOCKCHAIN_CONFIRMATION
+            : formData.transactionType === TransactionType.DEALS
             ? VerificationMethod.THIRD_PARTY_ARBITRATION
             : VerificationMethod.SELLER_PROOF_SUBMISSION,
         paymentMethods: [
@@ -770,33 +823,36 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
             type: "CARD",
             isDefault: false,
             details: {
-              supportedCards: ["visa", "mastercard"]
-            }
+              supportedCards: ["visa", "mastercard"],
+            },
           },
           {
             methodId: "bank_1",
             type: "BANK_TRANSFER",
             isDefault: true,
             details: {
-              supportedBanks: ["all"]
-            }
+              supportedBanks: ["all"],
+            },
           },
           {
             methodId: "crypto_1",
             type: "CRYPTOCURRENCY",
             isDefault: false,
             details: {
-              supportedTokens: ["BTC", "ETH", "USDT"]
-            }
-          }
-        ]
+              supportedTokens: ["BTC", "ETH", "USDT"],
+            },
+          },
+        ],
       };
 
       let finalDto: CreatePaymentLinkDto;
 
       switch (formData.transactionType) {
         case TransactionType.CRYPTOCURRENCY:
-          if (!formData.cryptocurrencyDetails.tokenSymbol || !formData.cryptocurrencyDetails.tokenAddress) {
+          if (
+            !formData.cryptocurrencyDetails.tokenSymbol ||
+            !formData.cryptocurrencyDetails.tokenAddress
+          ) {
             toast.error("Please select a token");
             return;
           }
@@ -804,12 +860,15 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
           finalDto = {
             ...baseDto,
             cryptocurrencyDetails: {
+              network: formData.cryptocurrencyDetails.network,
               tokenSymbol: formData.cryptocurrencyDetails.tokenSymbol,
-              tokenAddress: formData.cryptocurrencyDetails.tokenAddress,
-              chainId: formData.cryptocurrencyDetails.chainId,
-              pricePerToken: formData.cryptocurrencyDetails.pricePerToken,
-              minimumAmount: formData.cryptocurrencyDetails.minimumAmount
-            }
+              tokenAddress: formData.cryptocurrencyDetails.tokenAddress || "",
+              chainId: formData.cryptocurrencyDetails.chainId || 1,
+              decimals: formData.cryptocurrencyDetails.decimals,
+              requiredConfirmations: formData.cryptocurrencyDetails.requiredConfirmations,
+              acceptedTokens: formData.cryptocurrencyDetails.acceptedTokens,
+              networkOptions: formData.cryptocurrencyDetails.networkOptions
+            },
           } as CreatePaymentLinkDto;
           break;
 
@@ -824,9 +883,9 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
             servicesDetails: {
               serviceName: formData.name,
               duration: 0,
-              deliveryMethod: 'REMOTE',
-              milestones: []
-            }
+              deliveryMethod: "REMOTE",
+              milestones: [],
+            },
           } as CreatePaymentLinkDto;
           break;
 
@@ -837,7 +896,7 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
           }
 
           const totalPercentage = formData.dealDetails.stages.reduce(
-            (sum, stage) => sum + stage.paymentPercentage, 
+            (sum, stage) => sum + stage.paymentPercentage,
             0
           );
 
@@ -846,7 +905,10 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
             return;
           }
 
-          if (!formData.dealDetails.title || !formData.dealDetails.description) {
+          if (
+            !formData.dealDetails.title ||
+            !formData.dealDetails.description
+          ) {
             toast.error("Please fill in all required deal details");
             return;
           }
@@ -854,20 +916,22 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
           finalDto = {
             ...baseDto,
             dealDetails: {
-              dealType: formData.dealDetails.dealType || 'STANDARD',
+              dealType: formData.dealDetails.dealType || "STANDARD",
               title: formData.dealDetails.title.trim(),
               description: formData.dealDetails.description.trim(),
               timeline: formData.dealDetails.timeline,
-              stages: formData.dealDetails.stages.map(stage => ({
+              stages: formData.dealDetails.stages.map((stage) => ({
                 name: stage.name.trim(),
                 paymentPercentage: stage.paymentPercentage,
-                requirements: stage.requirements.filter(req => req.trim()),
+                requirements: stage.requirements.filter((req) => req.trim()),
                 timelineInDays: stage.timelineInDays,
-                requiredDocuments: stage.requiredDocuments.filter(doc => doc.trim())
+                requiredDocuments: stage.requiredDocuments.filter((doc) =>
+                  doc.trim()
+                ),
               })),
               requireAllPartyApproval: true,
-              stageTransitionDelay: 24
-            }
+              stageTransitionDelay: 24,
+            },
           } as CreatePaymentLinkDto;
           break;
 
@@ -879,8 +943,11 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
       toast.success("Payment link created successfully");
       onClose();
     } catch (error: unknown) {
-      console.error('Create payment link error:', error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to create payment link";
+      console.error("Create payment link error:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to create payment link";
       toast.error(errorMessage);
     }
   };
@@ -895,7 +962,9 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
         <Input
           id="name"
           value={formData.name}
-          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, name: e.target.value }))
+          }
           placeholder="Enter payment link name"
           required
         />
@@ -914,7 +983,9 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
             <SelectValue placeholder="Select transaction type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={TransactionType.CRYPTOCURRENCY}>Cryptocurrency</SelectItem>
+            <SelectItem value={TransactionType.CRYPTOCURRENCY}>
+              Cryptocurrency
+            </SelectItem>
             <SelectItem value={TransactionType.SERVICES}>Services</SelectItem>
             <SelectItem value={TransactionType.DEALS}>Deals</SelectItem>
           </SelectContent>
@@ -929,10 +1000,12 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
             type="number"
             placeholder="0.00"
             value={formData.defaultAmount}
-            onChange={(e) => setFormData(prev => ({ 
-              ...prev, 
-              defaultAmount: e.target.value 
-            }))}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                defaultAmount: e.target.value,
+              }))
+            }
             required
           />
         </div>
@@ -941,10 +1014,12 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
           <Label htmlFor="currency">Default Currency</Label>
           <Select
             value={formData.defaultCurrency}
-            onValueChange={(value) => setFormData(prev => ({ 
-              ...prev, 
-              defaultCurrency: value 
-            }))}
+            onValueChange={(value) =>
+              setFormData((prev) => ({
+                ...prev,
+                defaultCurrency: value,
+              }))
+            }
           >
             <SelectTrigger id="currency">
               <SelectValue placeholder="Select currency" />
@@ -965,7 +1040,9 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
           placeholder="Describe what this payment link is for..."
           className="min-h-[100px]"
           value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, description: e.target.value }))
+          }
           required
         />
       </div>
@@ -979,21 +1056,16 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
       <CardHeader>
         <CardTitle>Create Payment Link</CardTitle>
         <CardDescription>
-          Create a new payment link for your {formData.transactionType.toLowerCase().replace('_', ' ')}.
+          Create a new payment link for your{" "}
+          {formData.transactionType.toLowerCase().replace("_", " ")}.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            {renderCommonFields()}
-          </div>
+          <div className="space-y-4">{renderCommonFields()}</div>
 
           <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-            >
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button
@@ -1001,13 +1073,7 @@ const CreatePaymentLinkForm: React.FC<CreatePaymentLinkFormProps> = ({ onClose }
               disabled={createPaymentLink.isPending}
               className="min-w-[120px]"
             >
-              {createPaymentLink.isPending ? (
-                <>
-                  Creating...
-                </>
-              ) : (
-                "Create Link"
-              )}
+              {createPaymentLink.isPending ? <>Creating...</> : "Create Link"}
             </Button>
           </div>
         </form>

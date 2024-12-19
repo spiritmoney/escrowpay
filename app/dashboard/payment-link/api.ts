@@ -73,11 +73,10 @@ export interface ServicesDetails {
 }
 
 export interface CryptocurrencyDetails {
-  tokenAddress: string;
+  network: string;
   tokenSymbol: string;
-  chainId: number;
-  pricePerToken: number;
-  minimumAmount: number;
+  tokenAddress?: string;
+  chainId?: number;
 }
 
 export interface DealStage {
