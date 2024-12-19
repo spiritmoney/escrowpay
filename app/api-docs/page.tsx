@@ -123,36 +123,36 @@ def get_wallet_balance(token):
 const ApiDocsPage: React.FC = () => {
   const router = useRouter();
 
-  // Add authentication check
-  useEffect(() => {
-    // Replace this with your actual auth check logic
-    const isAuthenticated = localStorage.getItem("token"); // or your auth method
+  // // Add authentication check
+  // useEffect(() => {
+  //   // Replace this with your actual auth check logic
+  //   const isAuthenticated = localStorage.getItem("token"); // or your auth method
 
-    if (!isAuthenticated) {
-      router.push("/signin"); // or your sign-in route
-    }
-  }, [router]);
+  //   if (!isAuthenticated) {
+  //     router.push("/signin"); // or your sign-in route
+  //   }
+  // }, [router]);
 
-  // Prevent flash of content by returning null while checking auth
-  const [isLoading, setIsLoading] = useState(true);
+  // // Prevent flash of content by returning null while checking auth
+  // const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      // Replace with your actual auth check
-      const isAuthenticated = localStorage.getItem("token");
-      if (!isAuthenticated) {
-        router.push("/auth/signin");
-      } else {
-        setIsLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     // Replace with your actual auth check
+  //     const isAuthenticated = localStorage.getItem("token");
+  //     if (!isAuthenticated) {
+  //       router.push("/auth/signin");
+  //     } else {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    checkAuth();
-  }, [router]);
+  //   checkAuth();
+  // }, [router]);
 
-  if (isLoading) {
-    return null; // or a loading spinner
-  }
+  // if (isLoading) {
+  //   return null; // or a loading spinner
+  // }
 
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">

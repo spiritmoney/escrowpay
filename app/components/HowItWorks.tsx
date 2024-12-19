@@ -66,7 +66,7 @@ const HowItWorks: React.FC = () => {
             {steps.map((step, index) => (
               <div
                 key={step.title}
-                className="relative p-6 rounded-lg"
+                className="relative flex p-6 rounded-lg"
               >
                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mr-4">
                   <step.icon className="w-6 h-6 text-white" />
