@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const API_URL = "https://espeespay-backend.onrender.com";
+const API_URL = "https://api.paylinc.org";
 
 // Types
 interface Usage {

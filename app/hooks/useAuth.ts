@@ -27,8 +27,7 @@ interface ResetPasswordData {
   newPassword: string;
 }
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://espeespay-backend.onrender.com";
+const API_URL = "https://api.paylinc.org";
 
 const handleApiError = async (response: Response) => {
   const data = await response.json();

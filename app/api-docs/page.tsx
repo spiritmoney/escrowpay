@@ -50,7 +50,7 @@ const codeExamples = [
   {
     name: "JavaScript",
     code: `
-const API_URL = 'https://espeespay-backend.onrender.com';
+const API_URL = 'https://api.paylinc.org';
 
 // Create an Paylinc transaction
 const createTransaction = async (token) => {
@@ -87,7 +87,7 @@ const getBalance = async (token) => {
     code: `
 import requests
 
-API_URL = 'https://espeespay-backend.onrender.com'
+API_URL = 'https://api.paylinc.org'
 
 def create_transaction(token):
     headers = {

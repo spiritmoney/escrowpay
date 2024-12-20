@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const BASE_URL = "https://espeespay-backend.onrender.com";
+const BASE_URL = "https://api.paylinc.org";
 
 // Types
 export interface ProfileData {

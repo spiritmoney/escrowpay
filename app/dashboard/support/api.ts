@@ -1,6 +1,6 @@
 import { CreateSupportTicketDto, InitiateChatDto, ChatMessageDto, TicketsResponse, InitiateChatResponse, ChatSession, SendMessageResponse, EndChatResponse } from './types';
 
-const BASE_URL = "https://espeespay-backend.onrender.com";
+const BASE_URL = "https://api.paylinc.org";
 
 export const supportApi = {
   // Support Tickets
