@@ -11,7 +11,7 @@ const CTA: React.FC = () => {
           className="text-center"
         >
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            Ready to secure your transactions with Paylinc?
+            Ready to secure your transactions with Escrow?
           </h2>
           <p className="mt-4 text-xl text-blue-100 md:w-[800px] justify-center text-center mx-auto">
             Create custom payment links, manage multiple currencies, and trade with confidence

@@ -5,7 +5,7 @@ import {
   VerificationMethod 
 } from "@/app/dashboard/payment-link/api";
 
-const API_URL = "https://api.paylinc.org";
+const API_URL = "https://escrow-backend-1xw6.onrender.com";
 // const API_URL = "http://localhost:10000";
 
 interface CryptoPaymentDetails {

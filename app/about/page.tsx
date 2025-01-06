@@ -52,9 +52,9 @@ const AboutPage: React.FC = () => {
       <main className="flex-grow">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <section className="mb-12">
-            <h1 className="text-4xl font-bold mb-6 text-white">About Paylinc</h1>
+            <h1 className="text-4xl font-bold mb-6 text-white">About Escrow</h1>
             <p className="text-lg mb-4 text-gray-300">
-              Paylinc is a cutting-edge blockchain-based payment platform,
+              Escrow is a cutting-edge blockchain-based payment platform,
               designed to revolutionize the way businesses and individuals
               handle transactions in the digital age.
             </p>

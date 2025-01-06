@@ -12,7 +12,7 @@ import { motion } from "motion/react";
 
 const features = [
   {
-    name: "Paylinc-Based Payments",
+    name: "Escrow-Based Payments",
     description:
       "Secure fund holding through smart contracts for both fiat and cryptocurrency, with flexible refund mechanisms and dispute resolution.",
     icon: Shield,
@@ -58,10 +58,10 @@ const Features: React.FC = () => {
             Features
           </div>
           <div className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
-            Why Choose Paylinc?
+            Why Choose Escrow?
           </div>
           <div className="mt-4 max-w-2xl text-xl text-gray-400 lg:mx-auto">
-            Paylinc prioritizes security, transparency, and usability, making
+            Escrow prioritizes security, transparency, and usability, making
             it a trusted choice for cryptocurrency transactions worldwide.
           </div>
         </div>

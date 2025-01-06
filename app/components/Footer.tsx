@@ -134,7 +134,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="mt-8 border-t border-gray-700 pt-8 flex justify-between items-center">
           <p className="text-base text-gray-400">
-            &copy; 2024 Paylinc. All rights reserved.
+            &copy; 2024 Escrow. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <Link

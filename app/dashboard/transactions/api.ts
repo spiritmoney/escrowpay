@@ -1,6 +1,6 @@
 import { TransactionQueryParams, Transaction, ApiError } from './types';
 
-const BASE_URL = "https://api.paylinc.org";
+const BASE_URL = "https://escrow-backend-1xw6.onrender.com";
 
 export const fetchTransactions = async (params?: TransactionQueryParams): Promise<Transaction[]> => {
   try {

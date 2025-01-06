@@ -50,9 +50,9 @@ const codeExamples = [
   {
     name: "JavaScript",
     code: `
-const API_URL = 'https://api.paylinc.org';
+const API_URL = 'https://escrow-backend-1xw6.onrender.com';
 
-// Create an Paylinc transaction
+// Create an Escrow transaction
 const createTransaction = async (token) => {
   const response = await fetch(\`\${API_URL}/transactions\`, {
     method: 'POST',
@@ -87,7 +87,7 @@ const getBalance = async (token) => {
     code: `
 import requests
 
-API_URL = 'https://api.paylinc.org'
+API_URL = 'https://escrow-backend-1xw6.onrender.com'
 
 def create_transaction(token):
     headers = {
@@ -164,7 +164,7 @@ const ApiDocsPage: React.FC = () => {
               API Documentation
             </h2>
             <p className="mt-4 text-xl text-gray-400">
-              Integrate Paylinc's secure payment and trading features into your
+              Integrate Escrow's secure payment and trading features into your
               application.
             </p>
 

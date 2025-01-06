@@ -1,7 +1,7 @@
 // First, let's create an API client file
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-const API_URL = "https://api.paylinc.org";
+const API_URL = "https://escrow-backend-1xw6.onrender.com";
 
 // Types
 interface Balances {

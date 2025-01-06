@@ -1170,7 +1170,7 @@ const PaymentPageContent: React.FC = () => {
                   Pay with {selectedPaymentMethod}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  Protected by Paylinc
+                  Protected by Escrow
                   {paymentLink?.paymentLink?.metadata?.escrowConditions
                     ?.timeoutPeriod &&
                     ` • ${paymentLink.paymentLink.metadata.escrowConditions.timeoutPeriod}h Resolution Time`}

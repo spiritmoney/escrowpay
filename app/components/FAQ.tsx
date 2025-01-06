@@ -8,24 +8,24 @@ import {
 
 const faqs = [
   {
-    question: "What is Paylinc?",
+    question: "What is Escrow?",
     answer:
-      "Paylinc is a blockchain-powered payment solution that combines P2P trading with customizable payment links. It's designed to facilitate secure transactions for businesses and individuals, whether you're selling goods, services, or digital products.",
+      "Escrow is a blockchain-powered payment solution that combines P2P trading with customizable payment links. It's designed to facilitate secure transactions for businesses and individuals, whether you're selling goods, services, or digital products.",
   },
   {
-    question: "How does Paylinc ensure transaction security?",
+    question: "How does Escrow ensure transaction security?",
     answer:
-      "Paylinc uses smart contracts to hold funds securely until all transaction conditions are met. This escrow mechanism ensures that both parties are protected throughout the transaction, reducing fraud and building trust between users.",
+      "Escrow uses smart contracts to hold funds securely until all transaction conditions are met. This escrow mechanism ensures that both parties are protected throughout the transaction, reducing fraud and building trust between users.",
   },
   {
-    question: "What payment methods does Paylinc support?",
+    question: "What payment methods does Escrow support?",
     answer:
-      "Paylinc supports both cryptocurrency and fiat currency transactions, providing flexibility for users worldwide. This multi-currency support allows for seamless international transactions.",
+      "Escrow supports both cryptocurrency and fiat currency transactions, providing flexibility for users worldwide. This multi-currency support allows for seamless international transactions.",
   },
   {
-    question: "How can I use Paylinc for my business?",
+    question: "How can I use Escrow for my business?",
     answer:
-      "Paylinc is ideal for businesses, freelancers, and digital product sellers. You can create customized payment links, manage multiple transactions, and ensure secure payments for your goods or services through our escrow smart contracts.",
+      "Escrow is ideal for businesses, freelancers, and digital product sellers. You can create customized payment links, manage multiple transactions, and ensure secure payments for your goods or services through our escrow smart contracts.",
   },
   {
     question: "Are there any transaction fees?",

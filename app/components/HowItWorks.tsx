@@ -5,7 +5,7 @@ import { Wallet, ShieldCheck, BarChart } from "lucide-react";
 const steps = [
   {
     title: "Create an Account",
-    description: "Sign up for Paylinc in minutes. Verify your identity and access multiple currency options - both crypto and fiat.",
+    description: "Sign up for Escrow in minutes. Verify your identity and access multiple currency options - both crypto and fiat.",
     icon: Wallet,
   },
   {
@@ -30,7 +30,7 @@ const HowItWorks: React.FC = () => {
           className="text-center"
         >
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            How Paylinc Works
+            How Escrow Works
           </h2>
           <p className="mt-4 text-xl text-gray-400">
             A blockchain-powered payment solution that simplifies secure transactions
@@ -38,7 +38,7 @@ const HowItWorks: React.FC = () => {
           
           <div className="mt-6 max-w-3xl mx-auto">
             <p className="text-gray-400 leading-relaxed">
-              Paylinc combines P2P trading flexibility with customizable payment links,
+              Escrow combines P2P trading flexibility with customizable payment links,
               enabling seamless transactions for goods, services, and digital products.
               With support for multiple currencies, our platform ensures your funds are
               secure until all parties are satisfied.

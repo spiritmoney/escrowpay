@@ -1,6 +1,6 @@
 import { BaseNotification, NotificationType } from '../../types/notifications';
 
-const API_BASE_URL = "https://api.paylinc.org";
+const API_BASE_URL = "https://escrow-backend-1xw6.onrender.com";
 // const API_BASE_URL = "http://localhost:10000";
 
 export interface NotificationsResponse {

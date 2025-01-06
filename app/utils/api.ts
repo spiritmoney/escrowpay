@@ -1,4 +1,4 @@
-const API_URL = "https://api.paylinc.org";
+const API_URL = "https://escrow-backend-1xw6.onrender.com";
 
 export const getAuthHeaders = () => {
   // Get tokens from localStorage

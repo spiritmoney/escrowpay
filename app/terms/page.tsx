@@ -33,7 +33,7 @@ const TermsPage: React.FC = () => {
               <ul className="list-disc pl-6 space-y-2">
                 <li>Transaction fees and charges</li>
                 <li>Payment processing terms</li>
-                <li>Paylinc service conditions</li>
+                <li>Escrow service conditions</li>
                 <li>Dispute resolution process</li>
               </ul>
             </section>
@@ -55,7 +55,7 @@ const TermsPage: React.FC = () => {
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-white">Contact</h2>
               <p>
-                For any questions regarding these Terms of Service, please contact us at paylinc@gmail.com
+                For any questions regarding these Terms of Service, please contact us at escrow@gmail.com
               </p>
             </section>
           </div>

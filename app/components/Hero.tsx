@@ -18,7 +18,7 @@ const Hero: React.FC = () => {
           <span
             className="block"
           >
-            with Paylinc
+            with Escrow
           </span>
         </div>
         <div
