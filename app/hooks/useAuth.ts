@@ -27,7 +27,7 @@ interface ResetPasswordData {
   newPassword: string;
 }
 
-const API_URL = "https://api.paylinc.org";
+const API_URL = "https://escrow-backend-1xw6.onrender.com";
 
 const handleApiError = async (response: Response) => {
   const data = await response.json();
