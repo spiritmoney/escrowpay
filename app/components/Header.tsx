@@ -8,7 +8,7 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white/80 backdrop-blur-lg shadow-sm border-b border-gray-100 sticky top-0 z-50 overflow-x-hidden w-screen">
+    <header className="bg-white/80 backdrop-blur-lg shadow-sm border-b border-gray-100 sticky top-0 z-50 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-2 group">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -90,44 +90,52 @@ const Header: React.FC = () => {
               </svg>
             )}
           </Button>
-
-          {isMenuOpen && (
-            <div className="absolute top-full right-0 left-0 bg-white shadow-lg border border-gray-100 py-2 z-50">
-              <Link
-                href="/features"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-50"
-              >
-                Features
-              </Link>
-              <Link
-                href="/pricing"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-50"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/about"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-50"
-              >
-                About us
-              </Link>
-              <Link
-                href="/api-docs"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-50"
-              >
-                API Docs
-              </Link>
-              <div className="border-t border-gray-100 my-2"></div>
-              <Link
-                href="/auth/register"
-                className="block px-6 py-3 text-blue-600 hover:bg-blue-50"
-              >
-                Get Started
-              </Link>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Mobile menu positioned relative to header */}
+      {isMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-100 z-50">
+          <div className="px-4 py-2">
+            <Link
+              href="/features"
+              className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Features
+            </Link>
+            <Link
+              href="/pricing"
+              className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/about"
+              className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              About us
+            </Link>
+            <Link
+              href="/api-docs"
+              className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              API Docs
+            </Link>
+            <div className="border-t border-gray-100 my-2"></div>
+            <Link
+              href="/auth/register"
+              className="block px-4 py-3 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
