@@ -3,22 +3,45 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 const API_URL = "https://escrow-backend-xnwx.onrender.com";
 
-// Types
+// Types - Updated to match actual API response
+interface BalanceApiResponse {
+  ngn: number;
+  usd: number;
+  eur: number;
+  gbp: number;
+  usdc: number;
+  usdt: number;
+  espees: number;
+}
+
+// Internal interface for the component
 interface Balances {
-  fiat: {
-    NGN: number;
-    USD: number;
-    EUR: number;
-    NGN_change: number;
-    USD_change: number;
-    EUR_change: number;
+  fiat?: {
+    NGN?: number;
+    USD?: number;
+    EUR?: number;
+    GBP?: number;
+    NGN_change?: number;
+    USD_change?: number;
+    EUR_change?: number;
+    GBP_change?: number;
   };
-  crypto: {
-    ESP: {
-      amount: number;
-      usdValue: number;
+  crypto?: {
+    ESP?: {
+      amount?: number;
+      usdValue?: number;
     };
-    ESP_change: number;
+    USDC?: {
+      amount?: number;
+      usdValue?: number;
+    };
+    USDT?: {
+      amount?: number;
+      usdValue?: number;
+    };
+    ESP_change?: number;
+    USDC_change?: number;
+    USDT_change?: number;
   };
 }
 
@@ -63,7 +86,38 @@ export const useBalances = () => {
         headers: getHeaders(),
       });
       if (!response.ok) throw new Error("Failed to fetch balances");
-      return response.json();
+      const apiData: BalanceApiResponse = await response.json();
+
+      // Transform API response to expected format
+      return {
+        fiat: {
+          NGN: apiData.ngn || 0,
+          USD: apiData.usd || 0,
+          EUR: apiData.eur || 0,
+          GBP: apiData.gbp || 0,
+          NGN_change: 0, // API doesn't provide change data
+          USD_change: 0,
+          EUR_change: 0,
+          GBP_change: 0,
+        },
+        crypto: {
+          ESP: {
+            amount: apiData.espees || 0,
+            usdValue: apiData.espees || 0, // Assuming 1:1 for now
+          },
+          USDC: {
+            amount: apiData.usdc || 0,
+            usdValue: apiData.usdc || 0,
+          },
+          USDT: {
+            amount: apiData.usdt || 0,
+            usdValue: apiData.usdt || 0,
+          },
+          ESP_change: 0, // API doesn't provide change data
+          USDC_change: 0,
+          USDT_change: 0,
+        },
+      };
     },
   });
 };

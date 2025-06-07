@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const API_URL = "https://escrow-backend-1xw6.onrender.com";
+const API_URL = "https://escrow-backend-xnwx.onrender.com";
 
 // Types
 interface Usage {
@@ -12,7 +12,7 @@ interface Usage {
   paymentLinkLimit: number;
 }
 
-export type PaymentMethodType = 'CARD' | 'BANK';
+export type PaymentMethodType = "CARD" | "BANK";
 
 interface PaymentMethodDetails {
   lastFour: string;
@@ -40,14 +40,14 @@ interface PaymentMethodsResponse {
 }
 
 interface SubscriptionPlan {
-  type: 'STARTER' | string;
+  type: "STARTER" | string;
   price: number;
   isActive: boolean;
   usage: Usage;
 }
 
 interface BillingHistoryPaymentMethod {
-  type: 'CARD' | 'BANK';
+  type: "CARD" | "BANK";
   details: PaymentMethodDetails;
 }
 
@@ -55,7 +55,7 @@ interface BillingHistoryItem {
   id: string;
   amount: number;
   currency: string;
-  status: 'PAID' | 'FAILED' | 'PENDING';
+  status: "PAID" | "FAILED" | "PENDING";
   description: string;
   paymentMethod: BillingHistoryPaymentMethod;
   transactionReference: string;
@@ -84,34 +84,34 @@ const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      "Content-Type": "application/json",
       ...(options.headers || {}),
     },
   });
-  if (!response.ok) throw new Error('API request failed');
+  if (!response.ok) throw new Error("API request failed");
   return response.json();
 };
 
 // Custom hooks
 export const usePaymentMethods = () => {
   return useQuery<PaymentMethodsResponse>({
-    queryKey: ['paymentMethods'],
-    queryFn: () => fetchWithAuth('/billing/payment-methods'),
+    queryKey: ["paymentMethods"],
+    queryFn: () => fetchWithAuth("/billing/payment-methods"),
   });
 };
 
 export const useAddPaymentMethod = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (data: { type: PaymentMethodType; payload: any }) => 
+    mutationFn: (data: { type: PaymentMethodType; payload: any }) =>
       fetchWithAuth(`/billing/payment-methods/${data.type.toLowerCase()}`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(data.payload),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['paymentMethods'] });
+      queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
     },
   });
 };
@@ -120,21 +120,21 @@ export const useSetDefaultPaymentMethod = () => {
   return useMutation({
     mutationFn: (paymentMethodId: string) =>
       fetchWithAuth(`/billing/payment-methods/${paymentMethodId}/default`, {
-        method: 'PUT',
+        method: "PUT",
       }),
   });
 };
 
 export const useDeletePaymentMethod = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (paymentMethodId: string) =>
       fetchWithAuth(`/billing/payment-methods/${paymentMethodId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['paymentMethods'] });
+      queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
     },
   });
 };
@@ -142,8 +142,8 @@ export const useDeletePaymentMethod = () => {
 export const useUpdateAutoPaymentSettings = () => {
   return useMutation({
     mutationFn: (settings: any) =>
-      fetchWithAuth('/billing/auto-payment-settings', {
-        method: 'PUT',
+      fetchWithAuth("/billing/auto-payment-settings", {
+        method: "PUT",
         body: JSON.stringify(settings),
       }),
   });
@@ -151,32 +151,32 @@ export const useUpdateAutoPaymentSettings = () => {
 
 export const useBillingHistory = () => {
   return useQuery<BillingHistoryResponse>({
-    queryKey: ['billingHistory'],
-    queryFn: () => fetchWithAuth('/billing/history'),
+    queryKey: ["billingHistory"],
+    queryFn: () => fetchWithAuth("/billing/history"),
     initialData: {
       billingHistory: [],
       pagination: {
         total: 0,
         page: 1,
         perPage: 10,
-        totalPages: 0
-      }
-    }
+        totalPages: 0,
+      },
+    },
   });
 };
 
 export const useCurrentPlan = () => {
   return useQuery<SubscriptionPlan>({
-    queryKey: ['currentPlan'],
-    queryFn: () => fetchWithAuth('/subscription/plan'),
+    queryKey: ["currentPlan"],
+    queryFn: () => fetchWithAuth("/subscription/plan"),
   });
 };
 
 export const useUpgradePlan = () => {
   return useMutation({
     mutationFn: (planType: string) =>
-      fetchWithAuth('/subscription/upgrade', {
-        method: 'POST',
+      fetchWithAuth("/subscription/upgrade", {
+        method: "POST",
         body: JSON.stringify({ planType }),
       }),
   });

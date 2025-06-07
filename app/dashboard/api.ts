@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-const API_URL = "https://escrow-backend-1xw6.onrender.com";
+const API_URL = "https://escrow-backend-xnwx.onrender.com";
 
 // Add proper enums
 export enum TransactionType {
@@ -134,13 +134,13 @@ export const fetchWithAuth = async <T>(
     const error = await response.json();
     // Handle 404 "Not Found" errors specially
     if (response.status === 404) {
-      if (endpoint.includes('payment-links')) {
+      if (endpoint.includes("payment-links")) {
         return [] as T;
       }
-      if (endpoint.includes('transactions')) {
+      if (endpoint.includes("transactions")) {
         return [] as T;
       }
-      if (endpoint.includes('balance/recent-activity')) {
+      if (endpoint.includes("balance/recent-activity")) {
         return [] as T;
       }
     }
@@ -203,22 +203,24 @@ export const useDashboardStats = () => {
         );
         const totalCount = transactionsArray.length;
         const recentCount = recentTransactions.length;
-        const change = totalCount > 0 ? ((recentCount / totalCount) * 100) - 100 : 0;
+        const change =
+          totalCount > 0 ? (recentCount / totalCount) * 100 - 100 : 0;
 
         // Calculate customer stats from successful transactions
         const uniqueCustomers = new Set(
           transactionsArray
-            .filter(tx => tx.status === TransactionStatus.COMPLETED)
-            .map(tx => tx.customerId)
+            .filter((tx) => tx.status === TransactionStatus.COMPLETED)
+            .map((tx) => tx.customerId)
         );
 
         const recentCustomers = new Set(
           transactionsArray
-            .filter(tx => 
-              tx.status === TransactionStatus.COMPLETED && 
-              new Date(tx.createdAt) > oneMonthAgo
+            .filter(
+              (tx) =>
+                tx.status === TransactionStatus.COMPLETED &&
+                new Date(tx.createdAt) > oneMonthAgo
             )
-            .map(tx => tx.customerId)
+            .map((tx) => tx.customerId)
         );
 
         return {
@@ -227,8 +229,11 @@ export const useDashboardStats = () => {
             change: balanceChange,
           },
           activePaymentLinks: {
-            count: paymentLinksArray.filter(link => link.status === "ACTIVE").length,
-            newCount: paymentLinksArray.filter(link => new Date(link.createdAt) > oneWeekAgo).length,
+            count: paymentLinksArray.filter((link) => link.status === "ACTIVE")
+              .length,
+            newCount: paymentLinksArray.filter(
+              (link) => new Date(link.createdAt) > oneWeekAgo
+            ).length,
           },
           totalTransactions: {
             count: totalCount,
@@ -269,17 +274,23 @@ export const useRecentActivity = () => {
   return useQuery<RecentActivity[]>({
     queryKey: ["recentActivity"],
     queryFn: async () => {
-      const activity = await fetchWithAuth<{
-        type: TransactionType;
-        timestamp: string;
-        amount: string;
-        currency: string;
-      }[]>("/balance/recent-activity");
+      const activity = await fetchWithAuth<
+        {
+          type: TransactionType;
+          timestamp: string;
+          amount: string;
+          currency: string;
+        }[]
+      >("/balance/recent-activity");
 
       return activity.map((item) => ({
-        desc: `${item.type === TransactionType.RECEIVED ? "Received" : "Sent"} Payment`,
+        desc: `${
+          item.type === TransactionType.RECEIVED ? "Received" : "Sent"
+        } Payment`,
         time: getRelativeTimeString(item.timestamp),
-        amount: `${item.currency} ${item.amount}${item.type === TransactionType.SENT ? '-' : '+'}`,
+        amount: `${item.currency} ${item.amount}${
+          item.type === TransactionType.SENT ? "-" : "+"
+        }`,
         type: item.type,
         timestamp: item.timestamp,
       }));
@@ -293,11 +304,12 @@ export const useRevenueAnalytics = () => {
     queryKey: ["revenueAnalytics"],
     queryFn: async () => {
       try {
-        const transactions = await fetchWithAuth<Transaction[]>("/transactions")
-          .catch(error => {
-            if (error?.message === "No transactions found") return [];
-            throw error;
-          });
+        const transactions = await fetchWithAuth<Transaction[]>(
+          "/transactions"
+        ).catch((error) => {
+          if (error?.message === "No transactions found") return [];
+          throw error;
+        });
 
         // Return default stats if no transactions
         if (!transactions?.length) {
@@ -379,23 +391,22 @@ export const useRecentPaymentLinks = () => {
     queryKey: ["recentPaymentLinks"],
     queryFn: async () => {
       try {
-        const links = await fetchWithAuth<PaymentLink[]>("/payment-links")
-          .catch(error => {
-            // Return empty array for any error
-            console.log('Payment links fetch error:', error);
-            return [];
-          });
+        const links = await fetchWithAuth<PaymentLink[]>(
+          "/payment-links"
+        ).catch((error) => {
+          // Return empty array for any error
+          console.log("Payment links fetch error:", error);
+          return [];
+        });
 
         // Handle null/undefined case
         if (!links) return [];
 
         // Filter active links and take first 3
-        return links
-          .filter(link => link.status === "ACTIVE")
-          .slice(0, 3);
+        return links.filter((link) => link.status === "ACTIVE").slice(0, 3);
       } catch (error) {
         // Log error and return empty array
-        console.log('Payment links error:', error);
+        console.log("Payment links error:", error);
         return [];
       }
     },
