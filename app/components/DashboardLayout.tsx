@@ -25,9 +25,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     { icon: Wallet, label: "Balance", href: "/dashboard/balance" },
     { icon: SendToBack, label: "Transactions", href: "/dashboard/transactions" },
     { icon: LinkIcon, label: "Payment Link", href: "/dashboard/payment-link" },
-    { icon: BadgeDollarSign, label: "Plan", href: "/dashboard/plan" },
-    { icon: User, label: "Profile", href: "/dashboard/profile" },
-    { icon: HelpCircle, label: "Support", href: "/dashboard/support" },
+    // { icon: BadgeDollarSign, label: "Plan", href: "/dashboard/plan" },
+    // { icon: User, label: "Profile", href: "/dashboard/profile" },
+    // { icon: HelpCircle, label: "Support", href: "/dashboard/support" },
   ];
 
   return (
