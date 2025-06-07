@@ -3,189 +3,71 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 const API_URL = "https://escrow-backend-xnwx.onrender.com";
 // const API_URL = "http://localhost:10000";
 
-export enum PaymentLinkType {
-  BUYING = "BUYING",
-  SELLING = "SELLING",
-}
-
-export enum TransactionType {
-  CRYPTOCURRENCY = "CRYPTOCURRENCY",
-  SERVICES = "SERVICES",
-  DEALS = "DEALS",
-}
-
-export enum VerificationMethod {
-  BLOCKCHAIN_CONFIRMATION = "BLOCKCHAIN_CONFIRMATION",
-  SELLER_PROOF_SUBMISSION = "SELLER_PROOF_SUBMISSION",
-  BUYER_CONFIRMATION = "BUYER_CONFIRMATION",
-  THIRD_PARTY_ARBITRATION = "THIRD_PARTY_ARBITRATION",
-  ADMIN_VERIFICATION = "ADMIN_VERIFICATION",
-  AUTOMATED_SERVICE_CHECK = "AUTOMATED_SERVICE_CHECK",
-}
-
-export enum PaymentMethodType {
-  CARD = "CARD",
-  BANK_TRANSFER = "BANK_TRANSFER",
-  CRYPTOCURRENCY = "CRYPTOCURRENCY",
-}
-
+// Simple Payment Link API (aligned with integration document)
 export interface PaymentLink {
   id: string;
   name: string;
+  amount: number;
+  currency: string;
   url: string;
-  type: PaymentLinkType;
-  transactionType: TransactionType;
-  defaultAmount: number;
-  defaultCurrency: string;
-  description?: string;
   status: "ACTIVE" | "INACTIVE";
-  blockchainStatus?: string;
-  verificationMethod?: VerificationMethod;
   createdAt: string;
-}
-
-export interface PhysicalGoodsDetails {
-  productName: string;
-  condition: "NEW" | "USED" | "REFURBISHED";
-  shippingMethods: string[];
-  estimatedDeliveryDays: number;
-  productImages: string[];
-}
-
-export interface DigitalGoodsDetails {
-  productName: string;
-  fileFormat: string;
-  fileSize: number;
-  previewUrl?: string;
-  downloadLimit: number;
-}
-
-export interface ServiceDetails {
-  description: string;
-  deliveryTimeline: string;
-  terms: {
-    contractTerms: string;
-    paymentSchedule: string;
-    cancellationTerms: string;
-    disputeResolution: string;
-    additionalClauses: string[];
-  };
-}
-
-export interface CryptocurrencyDetails {
-  network: string;
-  tokenSymbol: string;
-  tokenAddress?: string;
-  chainId?: number;
-}
-
-export interface DealStage {
-  name: string;
-  paymentPercentage: number;
-  requirements: string[];
-  timelineInDays: number;
-  requiredDocuments: string[];
-}
-
-export interface DealDetails {
-  dealType: string;
-  title: string;
-  description: string;
-  timeline: string;
-  stages: DealStage[];
-  requireAllPartyApproval?: boolean;
-  stageTransitionDelay?: number;
-}
-
-export interface PaymentMethod {
-  methodId: string;
-  type: PaymentMethodType;
-  isDefault: boolean;
-  details: {
-    supportedCards?: string[];
-    supportedBanks?: string[];
-    supportedNetworks?: string[];
-  };
-}
-
-export interface ServiceProof {
-  description: string;
-  proofFiles: string[];
-  completionDate: string;
 }
 
 export interface CreatePaymentLinkDto {
   name: string;
-  type?: PaymentLinkType;
-  transactionType: TransactionType;
-  defaultAmount: number;
-  defaultCurrency: string;
-  isAmountNegotiable?: boolean;
-  verificationMethod?: VerificationMethod;
-  paymentMethods: PaymentMethod[];
-  serviceDetails?: ServiceDetails;
-  serviceProof?: ServiceProof;
-  cryptocurrencyDetails?: CryptocurrencyDetails;
-  dealDetails?: DealDetails;
-}
-
-interface CreatePaymentLinkResponse {
-  message: string;
-  link: {
-    id: string;
-    name: string;
-    url: string;
-    type: PaymentLinkType;
-    transactionType: TransactionType;
-    defaultAmount: number;
-    defaultCurrency: string;
-    description?: string;
-    status: "ACTIVE" | "INACTIVE";
-  };
-}
-
-export interface InitiateTransactionDto {
   amount: number;
-  currency: string;
+  currency: "USD" | "GBP" | "EUR" | "NGN" | "USDC" | "USDT" | "ESPEES";
+}
+
+export interface InitializePaymentDto {
   customerEmail: string;
   customerName: string;
+  paymentMethodToken?: string;
+  walletAddress?: string;
 }
 
-interface TransactionResponse {
-  message: string;
-  transaction: {
-    transactionId: string;
-    escrowAddress: string;
-    amount: number;
-    status: string;
-    expiresAt: string;
+export interface PaymentConfirmationDto {
+  transactionId: string;
+  paymentIntentId?: string; // For card payments
+  txHash?: string; // For crypto payments
+  reference: string;
+}
+
+export interface PublicPaymentLink {
+  id: string;
+  name: string;
+  amount: number;
+  currency: string;
+  status: "ACTIVE" | "INACTIVE";
+  paymentMethods: {
+    card: boolean;
+    crypto: boolean;
   };
-}
-
-export interface VerificationDetails {
-  trackingNumber?: string;
-  carrier?: string;
-  proofOfShipment?: string[];
-  deliveryPin?: string;
-  downloadLink?: string;
-  accessPin?: string;
-  expiryTime?: Date;
-  previewUrl?: string;
-  milestones?: {
+  createdBy: {
     name: string;
-    description: string;
-    amount: number;
-    percentage: number;
-    order: number;
-  }[];
-  transactionHash?: string;
+    email: string;
+  };
+  createdAt: string;
 }
 
-interface VerificationResponse {
-  status: string;
-  escrowStatus?: string;
+export interface Transaction {
+  id: string;
+  amount: number;
+  currency: string;
+  status: "PENDING" | "COMPLETED" | "FAILED";
+  paymentMethod: "CARD" | "CRYPTO";
+  customerEmail: string;
+  customerName: string;
+  paymentLink: {
+    id: string;
+    name: string;
+  };
+  createdAt: string;
+  completedAt?: string;
 }
 
+// Payment Link Management
 export const usePaymentLinks = () => {
   return useQuery({
     queryKey: ["payment-links"],
@@ -205,7 +87,11 @@ export const usePaymentLinks = () => {
 };
 
 export const useCreatePaymentLink = () => {
-  return useMutation<CreatePaymentLinkResponse, Error, CreatePaymentLinkDto>({
+  return useMutation<
+    { message: string; link: PaymentLink },
+    Error,
+    CreatePaymentLinkDto
+  >({
     mutationFn: async (data: CreatePaymentLinkDto) => {
       const response = await fetch(`${API_URL}/payment-links`, {
         method: "POST",
@@ -229,40 +115,29 @@ export const useCreatePaymentLink = () => {
   });
 };
 
-export const useInitiateTransaction = () => {
-  return useMutation<
-    TransactionResponse,
-    Error,
-    { linkId: string; data: InitiateTransactionDto }
-  >({
-    mutationFn: async ({ linkId, data }) => {
-      const response = await fetch(
-        `${API_URL}/payment-links/${linkId}/transactions`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify(data),
-        }
-      );
+export const useGetPublicPaymentLink = (linkId: string) => {
+  return useQuery<PublicPaymentLink>({
+    queryKey: ["public-payment-link", linkId],
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/payment-links/${linkId}`);
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to initiate transaction");
+        throw new Error(errorData.message || "Failed to fetch payment link");
       }
       return response.json();
     },
+    enabled: !!linkId,
   });
 };
 
-export const useUpdatePaymentLinkSettings = () => {
-  return useMutation({
-    mutationFn: async (data: {
-      defaultCurrency: string;
-      defaultExpirationTime: number;
-    }) => {
-      const response = await fetch(`${API_URL}/payment-links/settings`, {
+export const useUpdatePaymentLink = () => {
+  return useMutation<
+    PaymentLink,
+    Error,
+    { id: string; data: Partial<CreatePaymentLinkDto> }
+  >({
+    mutationFn: async ({ id, data }) => {
+      const response = await fetch(`${API_URL}/payment-links/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -270,160 +145,120 @@ export const useUpdatePaymentLinkSettings = () => {
         },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error("Failed to update settings");
-      return response.json();
-    },
-  });
-};
 
-export const useUpdateVerification = () => {
-  return useMutation<
-    VerificationResponse,
-    Error,
-    {
-      transactionId: string;
-      method: VerificationMethod;
-      data: VerificationDetails;
-    }
-  >({
-    mutationFn: async ({ transactionId, method, data }) => {
-      const response = await fetch(
-        `${API_URL}/payment-links/transactions/${transactionId}/verify`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            method,
-            verificationData: data,
-          }),
-        }
-      );
+      const responseData = await response.json();
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Verification failed");
+        throw new Error(
+          responseData.message || "Failed to update payment link"
+        );
       }
-      return response.json();
+
+      return responseData;
     },
   });
 };
 
-export const useConfirmDelivery = () => {
-  return useMutation<
-    { status: string },
-    Error,
-    {
-      transactionId: string;
-      isConfirmed: boolean;
-    }
-  >({
-    mutationFn: async ({ transactionId, isConfirmed }) => {
-      const response = await fetch(
-        `${API_URL}/payment-links/transactions/${transactionId}/confirm`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({ isConfirmed }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Confirmation failed");
-      }
-      return response.json();
-    },
-  });
-};
-
-export const useSubmitVerificationPin = () => {
-  return useMutation<
-    { status: string },
-    Error,
-    {
-      transactionId: string;
-      pin: string;
-    }
-  >({
-    mutationFn: async ({ transactionId, pin }) => {
-      const response = await fetch(
-        `${API_URL}/payment-links/transactions/${transactionId}/verify-pin`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({ pin }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "PIN verification failed");
-      }
-      return response.json();
-    },
-  });
-};
-
-export const useSubmitTransactionHash = () => {
-  return useMutation<
-    { status: string },
-    Error,
-    {
-      transactionId: string;
-      hash: string;
-    }
-  >({
-    mutationFn: async ({ transactionId, hash }) => {
-      const response = await fetch(
-        `${API_URL}/payment-links/transactions/${transactionId}/submit-hash`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({ transactionHash: hash }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Hash submission failed");
-      }
-      return response.json();
-    },
-  });
-};
-
-export const useDisablePaymentLink = () => {
+export const useDeletePaymentLink = () => {
   return useMutation<{ message: string }, Error, string>({
     mutationFn: async (linkId: string) => {
+      const response = await fetch(`${API_URL}/payment-links/${linkId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          responseData.message || "Failed to delete payment link"
+        );
+      }
+
+      return responseData;
+    },
+  });
+};
+
+// Payment Processing
+export const useInitializePayment = () => {
+  return useMutation<
+    { message: string; paymentLink: PaymentLink; transactionId: string },
+    Error,
+    { linkId: string; data: InitializePaymentDto }
+  >({
+    mutationFn: async ({ linkId, data }) => {
       const response = await fetch(
-        `${API_URL}/payment-links/${linkId}/disable`,
+        `${API_URL}/payment-links/${linkId}/initialize`,
         {
-          method: "PATCH",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+          body: JSON.stringify(data),
         }
       );
 
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to disable payment link");
+        throw new Error(responseData.message || "Failed to initialize payment");
       }
 
-      return response.json();
+      return responseData;
     },
+  });
+};
+
+export const useConfirmPayment = () => {
+  return useMutation<
+    { message: string; transaction: Transaction },
+    Error,
+    { linkId: string; data: PaymentConfirmationDto }
+  >({
+    mutationFn: async ({ linkId, data }) => {
+      const response = await fetch(
+        `${API_URL}/payment-links/${linkId}/confirm`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || "Failed to confirm payment");
+      }
+
+      return responseData;
+    },
+  });
+};
+
+export const useGetTransactionDetails = (transactionId: string) => {
+  return useQuery<Transaction>({
+    queryKey: ["transaction", transactionId],
+    queryFn: async () => {
+      const response = await fetch(
+        `${API_URL}/payment-links/transactions/${transactionId}`
+      );
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          responseData.message || "Failed to fetch transaction details"
+        );
+      }
+
+      return responseData;
+    },
+    enabled: !!transactionId,
   });
 };

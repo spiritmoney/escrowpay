@@ -41,6 +41,21 @@ const PaymentLinksPageContent: React.FC = () => {
           </Button>
         </div>
 
+        {/* Information banner */}
+        {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start space-x-3">
+            <div>
+              <h3 className="font-medium text-blue-900">
+                Simple Payment Links
+              </h3>
+              <p className="text-sm text-blue-700 mt-1">
+                Create payment links with name, amount, and currency - perfect
+                for simple transactions.
+              </p>
+            </div>
+          </div>
+        </div> */}
+
         {isCreating ? (
           <CreatePaymentLinkForm onClose={() => setIsCreating(false)} />
         ) : (

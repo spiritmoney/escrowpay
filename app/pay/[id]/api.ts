@@ -1,9 +1,4 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { 
-  PaymentLinkType,
-  TransactionType,
-  VerificationMethod 
-} from "@/app/dashboard/payment-link/api";
 
 const API_URL = "https://escrow-backend-xnwx.onrender.com";
 // const API_URL = "http://localhost:10000";
@@ -78,18 +73,25 @@ interface TransactionResponse {
 }
 
 export const useInitiateTransaction = () => {
-  return useMutation<TransactionResponse, Error, { 
-    linkId: string; 
-    data: InitiateTransactionData 
-  }>({
+  return useMutation<
+    TransactionResponse,
+    Error,
+    {
+      linkId: string;
+      data: InitiateTransactionData;
+    }
+  >({
     mutationFn: async ({ linkId, data }) => {
-      const response = await fetch(`${API_URL}/payment-links/${linkId}/initiate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `${API_URL}/payment-links/${linkId}/initiate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -145,7 +147,7 @@ export const useGetTransactionDetails = (transactionId?: string) => {
     queryKey: ["transaction", transactionId],
     queryFn: async () => {
       if (!transactionId) throw new Error("Transaction ID required");
-      
+
       const response = await fetch(
         `${API_URL}/payment-links/transactions/${transactionId}`
       );
@@ -166,18 +168,7 @@ interface PaymentMethod {
   isDefault: boolean;
 }
 
-type PaymentMethodKey = 'CARD' | 'BANK_TRANSFER' | 'CRYPTOCURRENCY' | 'DEALS';
-
-interface ServiceDetails {
-  description?: string;
-  deliveryTimeline?: string;
-  terms?: {
-    conditions?: string[];
-    paymentTerms?: string;
-    cancellationPolicy?: string;
-    refundPolicy?: string;
-  };
-}
+type PaymentMethodKey = "CARD" | "BANK_TRANSFER" | "CRYPTOCURRENCY";
 
 interface PaymentLinkResponse {
   seller: {
@@ -194,55 +185,28 @@ interface PaymentLinkResponse {
   paymentLink: {
     id: string;
     name: string;
-    type: PaymentLinkType;
-    transactionType: TransactionType;
-    defaultAmount: number;
-    defaultCurrency: string;
-    isAmountNegotiable: boolean;
-    minimumAmount: number | null;
-    maximumAmount: number | null;
+    amount: number;
+    currency: string;
+    status: "ACTIVE" | "INACTIVE";
     paymentMethods: {
-      available: string[];
-      details: Array<{
-        type: string;
-        details: {
-          supportedCards?: string[];
-          supportedBanks?: string[];
-          supportedTokens?: string[];
-        };
-        isDefault: boolean;
-      }>;
-      defaultMethod: string;
+      card: boolean;
+      crypto: boolean;
     };
-    verificationMethod: VerificationMethod;
-    cryptoDetails: null | any;
-    metadata: {
-      customerRequirements: {
-        emailRequired: boolean;
-        phoneRequired: boolean;
-        addressRequired: boolean;
-        walletAddressRequired: boolean;
-      };
-      verificationRequirements: Record<string, any>;
-      escrowConditions: {
-        timeoutPeriod: number;
-        autoReleaseEnabled: boolean;
-        disputeResolutionPeriod: number;
-      };
-    };
+    createdAt: string;
     sandboxMode?: boolean;
-    serviceDetails?: ServiceDetails;
   };
 }
 
 export const useGetPaymentLink = (linkId: string) => {
   return useQuery<PaymentLinkResponse, Error>({
-    queryKey: ['paymentLink', linkId],
+    queryKey: ["paymentLink", linkId],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/payment-links/${linkId}/validate`);
+      const response = await fetch(
+        `${API_URL}/payment-links/${linkId}/validate`
+      );
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Payment link not found');
+        throw new Error(error.message || "Payment link not found");
       }
       const data = await response.json();
 
@@ -253,21 +217,21 @@ export const useGetPaymentLink = (linkId: string) => {
 
 export const useGetTransactionHistory = (linkId: string) => {
   return useQuery({
-    queryKey: ['transactionHistory', linkId],
+    queryKey: ["transactionHistory", linkId],
     queryFn: async () => {
       const response = await fetch(
         `${API_URL}/payment-links/${linkId}/transactions`,
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
-      
+
       if (!response.ok) {
-        throw new Error('Failed to fetch transaction history');
+        throw new Error("Failed to fetch transaction history");
       }
-      
+
       return response.json();
     },
     enabled: !!linkId,
@@ -276,24 +240,25 @@ export const useGetTransactionHistory = (linkId: string) => {
 
 export const useGetEscrowDetails = (linkId: string, transactionId?: string) => {
   return useQuery({
-    queryKey: ['escrowDetails', linkId, transactionId],
+    queryKey: ["escrowDetails", linkId, transactionId],
     queryFn: async () => {
       const response = await fetch(
-        `${API_URL}/payment-links/${linkId}/escrow${transactionId ? `?transactionId=${transactionId}` : ''}`,
+        `${API_URL}/payment-links/${linkId}/escrow${
+          transactionId ? `?transactionId=${transactionId}` : ""
+        }`,
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
-      
+
       if (!response.ok) {
-        throw new Error('Failed to fetch escrow details');
+        throw new Error("Failed to fetch escrow details");
       }
-      
+
       return response.json();
     },
     enabled: !!linkId,
   });
 };
-  
