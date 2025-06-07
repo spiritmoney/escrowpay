@@ -20,7 +20,7 @@ export default function PaymentLayout({
       <main className="flex-1">{children}</main>
       <footer className="bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm text-gray-500">
-          &copy; 2024 Paylinc. All rights reserved.
+          &copy; 2024 Escrow. All rights reserved.
         </div>
       </footer>
     </div>
