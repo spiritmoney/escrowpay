@@ -30,11 +30,13 @@ export enum Currency {
 interface PaymentLink {
   id: string;
   name: string;
-  url: string;
-  type: "BUYING" | "SELLING";
-  transactionType: string;
-  defaultAmount: number;
-  defaultCurrency: Currency;
+  url?: string;
+  type?: "BUYING" | "SELLING";
+  transactionType?: string;
+  defaultAmount?: number;
+  amount?: number; // Support both amount and defaultAmount
+  defaultCurrency?: Currency;
+  currency?: string; // Support both currency and defaultCurrency
   description?: string;
   status: "ACTIVE" | "INACTIVE";
   createdAt: string;
@@ -391,19 +393,31 @@ export const useRecentPaymentLinks = () => {
     queryKey: ["recentPaymentLinks"],
     queryFn: async () => {
       try {
-        const links = await fetchWithAuth<PaymentLink[]>(
-          "/payment-links"
-        ).catch((error) => {
-          // Return empty array for any error
-          console.log("Payment links fetch error:", error);
-          return [];
+        // Fetch from the correct endpoint
+        const response = await fetch(`${API_URL}/payment-links`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         });
 
-        // Handle null/undefined case
-        if (!links) return [];
+        if (!response.ok) {
+          console.log(
+            "Payment links fetch error:",
+            response.status,
+            response.statusText
+          );
+          return [];
+        }
 
-        // Filter active links and take first 3
-        return links.filter((link) => link.status === "ACTIVE").slice(0, 3);
+        const data = await response.json();
+        const links = data.data || data || [];
+
+        // Handle null/undefined case
+        if (!links || !Array.isArray(links)) return [];
+
+        // Filter active links and take first 5 for recent payment links
+        return links.filter((link) => link.status === "ACTIVE").slice(0, 5);
       } catch (error) {
         // Log error and return empty array
         console.log("Payment links error:", error);

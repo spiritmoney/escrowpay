@@ -87,7 +87,8 @@ const RecentPaymentLinks: React.FC = () => {
                 <p className="font-medium text-gray-900">{link.name}</p>
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
                   <span>
-                    {link.defaultCurrency} {link.defaultAmount}
+                    {link.currency || link.defaultCurrency}{" "}
+                    {link.amount || link.defaultAmount}
                   </span>
                   <span>•</span>
                   <span>{getRelativeTimeString(link.createdAt)}</span>
@@ -245,26 +246,27 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-4">
-          <Card className="bg-white border-blue-100">
-            <CardHeader className="flex flex-row items-center justify-between p-4">
-              <CardTitle className="text-sm font-medium">
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card className="bg-white border-blue-100 shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
                 Total Balance
               </CardTitle>
               <Wallet className="h-4 w-4 text-blue-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 pb-4">
               {statsLoading ? (
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <>
-                  <div className="text-2xl font-bold">
-                    ${stats?.totalBalance.amount.toLocaleString(undefined, {
+                  <div className="text-2xl font-bold text-gray-900">
+                    $
+                    {stats?.totalBalance.amount.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
+                      maximumFractionDigits: 2,
                     })}
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 mt-1">
                     {stats?.totalBalance.change.toFixed(1)}% from last month
                   </p>
                 </>
@@ -272,22 +274,22 @@ const DashboardPage: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-blue-100">
-            <CardHeader className="flex flex-row items-center justify-between p-4">
-              <CardTitle className="text-sm font-medium">
+          <Card className="bg-white border-blue-100 shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
                 Active Payment Links
               </CardTitle>
               <LinkIcon className="h-4 w-4 text-blue-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 pb-4">
               {statsLoading ? (
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold text-gray-900">
                     {stats?.activePaymentLinks.count}
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 mt-1">
                     {stats?.activePaymentLinks.newCount} created this week
                   </p>
                 </>
@@ -295,46 +297,23 @@ const DashboardPage: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-blue-100">
-            <CardHeader className="flex flex-row items-center justify-between p-4">
-              <CardTitle className="text-sm font-medium">
+          <Card className="bg-white border-blue-100 shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
                 Total Transactions
               </CardTitle>
               <Activity className="h-4 w-4 text-blue-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 pb-4">
               {statsLoading ? (
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold text-gray-900">
                     {stats?.totalTransactions.count}
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 mt-1">
                     {stats?.totalTransactions.change.toFixed(1)}% from last week
-                  </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-blue-100">
-            <CardHeader className="flex flex-row items-center justify-between p-4">
-              <CardTitle className="text-sm font-medium">
-                Active Customers
-              </CardTitle>
-              <Users className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              {statsLoading ? (
-                <Skeleton className="h-8 w-32" />
-              ) : (
-                <>
-                  <div className="text-2xl font-bold">
-                    {stats?.activeCustomers.count}
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    {stats?.activeCustomers.newCount} this month
                   </p>
                 </>
               )}
@@ -343,11 +322,13 @@ const DashboardPage: React.FC = () => {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="bg-white border-blue-100">
-            <CardHeader className="p-4">
-              <CardTitle className="text-gray-900">Recent Activity</CardTitle>
+          <Card className="bg-white border-blue-100 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-gray-900 text-lg font-semibold">
+                Recent Activity
+              </CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="px-4 pb-4">
               {activityLoading ? (
                 <div className="space-y-4">
                   {[1, 2, 3].map((i) => (
@@ -366,15 +347,18 @@ const DashboardPage: React.FC = () => {
                   {recentActivity.map((activity, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between py-2 border-b last:border-0"
+                      className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-gray-50 border-b last:border-0"
                     >
                       <div>
-                        <p className="font-medium">{activity.desc}</p>
+                        <p className="font-medium text-gray-900">
+                          {activity.desc}
+                        </p>
                         <p className="text-sm text-gray-500">{activity.time}</p>
                       </div>
                       <div
-                        className={`font-medium ${
-                          typeof activity.amount === 'string' && activity.amount.startsWith('-')
+                        className={`font-semibold ${
+                          typeof activity.amount === "string" &&
+                          activity.amount.startsWith("-")
                             ? "text-red-600"
                             : "text-green-600"
                         }`}
@@ -388,15 +372,20 @@ const DashboardPage: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-blue-100">
-            <CardHeader className="p-4">
-              <CardTitle className="text-gray-900">Quick Actions</CardTitle>
+          <Card className="bg-white border-blue-100 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-gray-900 text-lg font-semibold">
+                Quick Actions
+              </CardTitle>
             </CardHeader>
-            <CardContent className="p-4 space-y-4">
-              <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+            <CardContent className="px-4 pb-4 space-y-3">
+              <Button
+                asChild
+                className="w-full bg-blue-600 hover:bg-blue-700 h-11"
+              >
                 <Link
                   href="/dashboard/payment-link"
-                  className="flex items-center"
+                  className="flex items-center justify-center"
                 >
                   <LinkIcon className="mr-2 h-4 w-4" />
                   Create Payment Link
@@ -405,11 +394,11 @@ const DashboardPage: React.FC = () => {
               <Button
                 asChild
                 variant="outline"
-                className="w-full border-blue-200"
+                className="w-full border-blue-200 hover:bg-blue-50 h-11"
               >
                 <Link
                   href="/dashboard/transactions"
-                  className="flex items-center"
+                  className="flex items-center justify-center"
                 >
                   <Activity className="mr-2 h-4 w-4" />
                   View Transactions
@@ -418,9 +407,12 @@ const DashboardPage: React.FC = () => {
               <Button
                 asChild
                 variant="outline"
-                className="w-full border-blue-200"
+                className="w-full border-blue-200 hover:bg-blue-50 h-11"
               >
-                <Link href="/dashboard/balance" className="flex items-center">
+                <Link
+                  href="/dashboard/balance"
+                  className="flex items-center justify-center"
+                >
                   <Wallet className="mr-2 h-4 w-4" />
                   Manage Balance
                 </Link>
@@ -433,11 +425,6 @@ const DashboardPage: React.FC = () => {
           <RecentPaymentLinks />
           <RevenueAnalytics />
         </div>
-        <TransactionsList />
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Settings />
-          <SupportAccess />
-        </div> */}
       </div>
     </DashboardLayout>
   );
